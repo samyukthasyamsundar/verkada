@@ -12,8 +12,6 @@
   --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --blue:#3b82f6;
 }
 body { background:var(--bg); color:var(--bright); font-family:-apple-system,'Inter',sans-serif; height:100vh; display:grid; grid-template-rows:44px 1fr 72px; overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; }
-
-/* TOP BAR */
 header { display:flex; align-items:center; justify-content:space-between; padding:0 20px; border-bottom:1px solid var(--border); flex-shrink:0; }
 .logo { font-size:12px; font-weight:700; letter-spacing:2px; }
 .hdr-center { display:flex; gap:2px; }
@@ -24,22 +22,25 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 .ldot { width:6px; height:6px; border-radius:50%; background:var(--red); animation:blink 1.2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
 .clock { font-variant-numeric:tabular-nums; color:var(--bright); }
-
-/* MAIN BODY */
 .body { display:grid; grid-template-columns:1fr 280px; overflow:hidden; }
-
-/* LEFT — camera area */
 .cam-area { display:flex; flex-direction:column; overflow:hidden; }
-
-/* MAIN FEED */
 .main-feed { position:relative; flex:1; background:#000; overflow:hidden; min-height:0; }
-.main-feed video, .main-feed canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.main-feed canvas { pointer-events:none; }
+.main-feed video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.main-feed canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
 .feed-label { position:absolute; top:12px; left:14px; font-size:9px; letter-spacing:2px; color:rgba(255,255,255,.4); font-family:'SF Mono',monospace; pointer-events:none; z-index:10; }
 .feed-ts { position:absolute; bottom:10px; left:14px; font-size:9px; color:rgba(255,255,255,.3); font-family:'SF Mono',monospace; pointer-events:none; z-index:10; }
 .rec-badge { position:absolute; top:12px; right:14px; display:flex; align-items:center; gap:5px; font-size:9px; letter-spacing:1.5px; color:rgba(239,68,68,.8); pointer-events:none; z-index:10; }
 .rdot { width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.2s infinite; }
-.alert-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(239,68,68,.15)); border-bottom:2px solid var(--red); padding:10px 14px; display:none; z-index:20; animation:slideUp .3s ease; }
+.sec-badge { position:absolute; top:10px; left:50%; transform:translateX(-50%); font-size:8px; letter-spacing:1.8px; padding:3px 11px; border-radius:2px; font-weight:700; pointer-events:none; z-index:10; display:none; }
+.sec-badge.sl-restricted { display:block; background:rgba(239,68,68,.18); color:var(--red); border:1px solid rgba(239,68,68,.4); }
+.sec-badge.sl-medium     { display:block; background:rgba(245,158,11,.15); color:var(--amber); border:1px solid rgba(245,158,11,.35); }
+.sec-badge.sl-alarm      { display:block; background:rgba(239,68,68,.3); color:var(--red); border:1px solid rgba(239,68,68,.5); animation:blink .8s infinite; }
+.cb { position:absolute; width:18px; height:18px; pointer-events:none; z-index:10; opacity:.5; display:none; }
+.cb-tl { top:9px;    left:9px;    border-top:2px solid var(--red); border-left:2px solid var(--red); }
+.cb-tr { top:9px;    right:9px;   border-top:2px solid var(--red); border-right:2px solid var(--red); }
+.cb-bl { bottom:9px; left:9px;    border-bottom:2px solid var(--red); border-left:2px solid var(--red); }
+.cb-br { bottom:9px; right:9px;   border-bottom:2px solid var(--red); border-right:2px solid var(--red); }
+.alert-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(239,68,68,.15)); border-bottom:2px solid var(--red); padding:10px 14px; display:none; z-index:20; animation:slideUp .3s ease; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .alert-overlay .at { font-size:10px; letter-spacing:2px; color:var(--red); font-weight:600; }
 .alert-overlay .ab { font-size:12px; color:#fff; margin-top:3px; }
@@ -51,23 +52,18 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 .btn-a:hover { background:rgba(245,158,11,.25); }
 .btn-d { background:rgba(255,255,255,.05); border-color:#333; color:var(--muted); }
 .btn-d:hover { color:#fff; border-color:#555; }
-
-/* THUMBNAIL STRIP */
 .thumb-strip { height:110px; flex-shrink:0; display:flex; gap:1px; background:var(--border); border-top:1px solid var(--border); overflow-x:auto; }
 .thumb-strip::-webkit-scrollbar { display:none; }
-.thumb { flex:0 0 160px; background:var(--panel); position:relative; cursor:pointer; overflow:hidden; transition:all .15s; }
+.thumb { flex:0 0 160px; background:var(--panel); position:relative; cursor:pointer; overflow:hidden; transition:opacity .15s; }
 .thumb:hover { opacity:.85; }
 .thumb.active { outline:2px solid var(--bright); outline-offset:-2px; }
 .thumb-label { position:absolute; bottom:6px; left:8px; font-size:8px; letter-spacing:1.5px; color:rgba(255,255,255,.5); font-family:'SF Mono',monospace; pointer-events:none; z-index:5; }
-.thumb-count { position:absolute; top:6px; right:8px; font-size:9px; color:rgba(255,255,255,.5); pointer-events:none; z-index:5; }
-.thumb-alert { position:absolute; top:0; left:0; right:0; height:2px; background:var(--red); display:none; }
+.thumb-count { position:absolute; top:10px; right:8px; font-size:9px; color:rgba(255,255,255,.5); pointer-events:none; z-index:5; }
+.thumb-alert { position:absolute; top:0; left:0; right:0; height:2px; background:var(--red); display:none; z-index:6; }
+.thumb-sec { position:absolute; top:0; left:0; right:0; height:3px; z-index:5; }
 .thumb canvas, .thumb video { width:100%; height:100%; object-fit:cover; }
-.thumb-live { position:absolute; top:6px; left:8px; width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
-
-/* SIDEBAR */
+.thumb-live { position:absolute; top:10px; left:8px; width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; z-index:5; }
 .sidebar { border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
-
-/* KPI GRID */
 .kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); flex-shrink:0; }
 .kpi { background:var(--panel); padding:16px; }
 .kpi-l { font-size:9px; letter-spacing:1.8px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
@@ -76,8 +72,15 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 .kpi-s { font-size:9px; color:var(--muted); margin-top:4px; }
 .kpi.clickable { cursor:pointer; }
 .kpi.clickable:hover { background:#141416; }
-
-/* WHO LIST */
+.cam-info-row { padding:9px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:8px; }
+.cam-info-text { flex:1; min-width:0; }
+.cam-info-name { font-size:10px; font-weight:600; color:var(--bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cam-info-desc { font-size:9px; color:var(--muted); margin-top:2px; }
+.sec-pill { font-size:8px; padding:2px 7px; border-radius:2px; font-weight:700; letter-spacing:1px; flex-shrink:0; }
+.sp-low,.sp-standard { background:rgba(34,197,94,.12); color:var(--green); }
+.sp-medium            { background:rgba(245,158,11,.12); color:var(--amber); }
+.sp-restricted        { background:rgba(239,68,68,.12); color:var(--red); }
+.sp-alarm             { background:rgba(239,68,68,.25); color:var(--red); }
 .sec-head { padding:12px 16px 8px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); flex-shrink:0; }
 .who-list { flex:1; overflow-y:auto; }
 .who-list::-webkit-scrollbar { display:none; }
@@ -93,21 +96,15 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 .b-vis { background:rgba(245,158,11,.12); color:var(--amber); }
 .b-unk { background:rgba(239,68,68,.12); color:var(--red); }
 .who-dwell { font-size:9px; color:var(--muted); font-variant-numeric:tabular-nums; }
-
-/* AI SUMMARY */
 .ai-box { border-top:1px solid var(--border); padding:14px; flex-shrink:0; }
 .ai-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
 .ai-dot { width:5px; height:5px; border-radius:50%; background:var(--blue); animation:blink 2s infinite; }
 .ai-text { font-size:11px; color:var(--text); line-height:1.7; }
-
-/* BOTTOM BAR */
 footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--border); }
 .bstat { display:flex; flex-direction:column; justify-content:center; padding:0 24px; border-right:1px solid var(--border); }
 .bstat:last-child { border:none; }
 .bstat-n { font-size:24px; font-weight:200; letter-spacing:-.5px; }
 .bstat-l { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
-
-/* MODAL */
 .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:100; backdrop-filter:blur(6px); }
 .modal-bg.open { display:flex; }
 .modal { background:#111113; border:1px solid #2a2a2e; border-radius:6px; width:420px; animation:pop .2s ease; }
@@ -129,8 +126,6 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
 .mb-a:hover { background:rgba(245,158,11,.2); }
 .mb-m { background:rgba(255,255,255,.04); border-color:#333; color:var(--muted); }
 .mb-m:hover { color:#fff; border-color:#555; }
-
-/* LOADING */
 .loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; gap:16px; }
 .loading-logo { font-size:14px; font-weight:700; letter-spacing:3px; }
 .loading-bar { width:240px; height:1px; background:#1a1a1a; position:relative; overflow:hidden; }
@@ -141,14 +136,12 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
 <div class="loading" id="loading">
   <div class="loading-logo">VERKADA AI</div>
   <div class="loading-bar"></div>
   <div class="loading-status" id="loadStatus">Loading face detection models...</div>
 </div>
 
-<!-- TOP BAR -->
 <header>
   <div class="logo">VERKADA</div>
   <div class="hdr-center">
@@ -164,18 +157,20 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
   </div>
 </header>
 
-<!-- BODY -->
 <div class="body">
-
-  <!-- LEFT -->
   <div class="cam-area">
-    <!-- MAIN FEED -->
     <div class="main-feed" id="mainFeed">
       <video id="mainVideo" autoplay muted playsinline></video>
       <canvas id="mainCanvas"></canvas>
+      <canvas id="mainSimCanvas" style="display:none;"></canvas>
       <div class="feed-label" id="mainLabel">CAM-01 · MAIN ENTRANCE · HQ NORTH</div>
       <div class="rec-badge"><div class="rdot"></div>REC</div>
       <div class="feed-ts" id="feedTs"></div>
+      <div class="sec-badge" id="secBadge"></div>
+      <div class="cb cb-tl" id="cbTl"></div>
+      <div class="cb cb-tr" id="cbTr"></div>
+      <div class="cb cb-bl" id="cbBl"></div>
+      <div class="cb cb-br" id="cbBr"></div>
       <div class="alert-overlay" id="alertOverlay">
         <div class="at">⚠ UNAUTHORIZED ACCESS DETECTED</div>
         <div class="ab" id="alertDetail">Unknown person — no match in employee database</div>
@@ -186,12 +181,9 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
         </div>
       </div>
     </div>
-
-    <!-- THUMBNAIL STRIP -->
     <div class="thumb-strip" id="thumbStrip"></div>
   </div>
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="kpi-grid">
       <div class="kpi">
@@ -216,6 +208,14 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
       </div>
     </div>
 
+    <div class="cam-info-row" id="camInfoRow">
+      <div class="cam-info-text">
+        <div class="cam-info-name" id="camInfoName">CAM-01 · Main Entrance</div>
+        <div class="cam-info-desc" id="camInfoDesc">Standard access zone. All badge types accepted.</div>
+      </div>
+      <div class="sec-pill sp-standard" id="camSecPill">STANDARD</div>
+    </div>
+
     <div class="sec-head">Detected Persons</div>
     <div class="who-list" id="whoList"></div>
 
@@ -226,7 +226,6 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="bstat"><div class="bstat-n" id="bEntries">0</div><div class="bstat-l">Entries Today</div></div>
   <div class="bstat"><div class="bstat-n" id="bExits">0</div><div class="bstat-l">Exits Today</div></div>
@@ -234,7 +233,6 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
   <div class="bstat"><div class="bstat-n" id="bFaces">0</div><div class="bstat-l">Faces Detected</div></div>
 </footer>
 
-<!-- ALERT MODAL -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-hdr">
@@ -257,39 +255,51 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
 </div>
 
 <script>
-// ── EMPLOYEE DATABASE ─────────────────────────────────────────────
-const EMPLOYEES = [
-  { name:'Sarah K.',   id:'EMP-0421', dept:'Engineering',  role:'emp', col:'#22c55e' },
-  { name:'James M.',   id:'EMP-0198', dept:'Sales',         role:'emp', col:'#22c55e' },
-  { name:'Priya R.',   id:'EMP-0337', dept:'Product',       role:'emp', col:'#22c55e' },
-  { name:'Daniel T.',  id:'EMP-0512', dept:'Security',      role:'emp', col:'#22c55e' },
-  { name:'Aisha N.',   id:'EMP-0089', dept:'HR',            role:'emp', col:'#22c55e' },
-  { name:'Marcus L.',  id:'EMP-0274', dept:'Finance',       role:'emp', col:'#22c55e' },
-  { name:'Guest Pass', id:'VIS-0001', dept:'Visitor',       role:'vis', col:'#f59e0b' },
+// ── CAMERA CONFIG ──────────────────────────────────────────────────
+const CAMERAS = [
+  { id:'CAM-01', label:'MAIN ENTRANCE · HQ NORTH',  short:'Main Entrance',  level:'standard',   lc:'#22c55e', zone:'entrance',  desc:'Standard access. All badge types accepted.' },
+  { id:'CAM-02', label:'LOBBY FLOOR · HQ SOUTH',    short:'Lobby Floor',    level:'low',        lc:'#22c55e', zone:'lobby',     desc:'Open lobby. Visitors & employees welcome.' },
+  { id:'CAM-03', label:'SERVER ROOM · B2',           short:'Server Room',    level:'restricted', lc:'#ef4444', zone:'server',    desc:'RESTRICTED: IT Security only. 2FA required.' },
+  { id:'CAM-04', label:'PARKING · LEVEL B1',         short:'Parking B1',     level:'low',        lc:'#3b82f6', zone:'parking',   desc:'Employee parking. LPR scanning active.' },
+  { id:'CAM-05', label:'ROOFTOP ACCESS',             short:'Rooftop',        level:'restricted', lc:'#ef4444', zone:'rooftop',   desc:'RESTRICTED: No scheduled access. Motion alerts.' },
+  { id:'CAM-06', label:'EAST CORRIDOR · FL3',        short:'East Corridor',  level:'medium',     lc:'#f59e0b', zone:'corridor',  desc:'Employees only. Badge required at stairwell.' },
+  { id:'CAM-07', label:'RECEPTION · FL1',            short:'Reception',      level:'low',        lc:'#22c55e', zone:'reception', desc:'Front reception. Visitor management active.' },
+  { id:'CAM-08', label:'EMERGENCY EXIT · FL2',       short:'Emerg. Exit',    level:'alarm',      lc:'#ef4444', zone:'exit',      desc:'ALARM ZONE: Emergency use only.' },
 ];
 
-const CAM_LABELS = [
-  'CAM-01 · MAIN ENTRANCE · HQ NORTH',
-  'CAM-02 · LOBBY FLOOR · HQ SOUTH',
-  'CAM-03 · SERVER ROOM · B2',
-  'CAM-04 · PARKING · LEVEL B1',
-  'CAM-05 · ROOFTOP ACCESS',
-  'CAM-06 · EAST CORRIDOR · FL3',
-  'CAM-07 · RECEPTION · FL1',
-  'CAM-08 · EMERGENCY EXIT · FL2',
+// ── SCENE PEOPLE PER CAMERA (normalized 0-1 coords) ───────────────
+// nx,ny = position; vx,vy = velocity per frame; sz = size factor; seated = no movement
+const CAM_SCENES = [
+  null, // CAM-01: live webcam
+  { people: [ // LOBBY – Aisha at desk, two guests
+    { name:'Aisha N.',        id:'EMP-0089', dept:'HR',          role:'emp', col:'#22c55e', nx:0.78, ny:0.63, vx:0,       vy:0,       sz:0.052, seated:true },
+    { name:'Guest · Raj P.',  id:'VIS-0023', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.26, ny:0.68, vx:0.0012,  vy:0.0005,  sz:0.048 },
+    { name:'Guest · Chen L.', id:'VIS-0024', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.47, ny:0.72, vx:-0.001,  vy:0.0004,  sz:0.046 },
+  ]},
+  { people: [ // SERVER ROOM – Daniel authorized, restricted zone
+    { name:'Daniel T.',       id:'EMP-0512', dept:'IT Security', role:'emp', col:'#22c55e', nx:0.52, ny:0.70, vx:0.0005,  vy:0,       sz:0.055 },
+  ]},
+  { people: [ // PARKING – Marcus and James walking
+    { name:'Marcus L.',       id:'EMP-0274', dept:'Finance',     role:'emp', col:'#22c55e', nx:0.18, ny:0.78, vx:0.0018,  vy:0,       sz:0.046 },
+    { name:'James M.',        id:'EMP-0198', dept:'Sales',       role:'emp', col:'#22c55e', nx:0.74, ny:0.74, vx:-0.0014, vy:0,       sz:0.046 },
+  ]},
+  { people: [] }, // ROOFTOP – empty by default (intruder spawns periodically)
+  { people: [ // CORRIDOR – Priya and Sarah
+    { name:'Priya R.',        id:'EMP-0337', dept:'Product',     role:'emp', col:'#22c55e', nx:0.32, ny:0.73, vx:0.0016,  vy:0,       sz:0.050 },
+    { name:'Sarah K.',        id:'EMP-0421', dept:'Engineering', role:'emp', col:'#22c55e', nx:0.67, ny:0.70, vx:-0.0013, vy:0,       sz:0.050 },
+  ]},
+  { people: [ // RECEPTION – Aisha seated, Kim waiting
+    { name:'Aisha N.',        id:'EMP-0089', dept:'HR',          role:'emp', col:'#22c55e', nx:0.54, ny:0.65, vx:0,       vy:0,       sz:0.053, seated:true },
+    { name:'Guest · Kim J.',  id:'VIS-0025', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.22, ny:0.74, vx:0.0005,  vy:0,       sz:0.048 },
+  ]},
+  { people: [] }, // EMERGENCY EXIT – alarm zone, always empty
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────
-let faceApiLoaded = false;
-let detections = [];
-let personMap = new Map(); // face index -> assigned employee
-let entries = 0, exits = 0, unkCount = 0, alertCount = 0;
-let totalFaces = 0;
-let dwellData = new Map();
-let lastDetectionCount = 0;
-let activeCam = 0;
-let lastAlertTime = null;
-let aiSummaries = [];
+let faceApiLoaded = false, detections = [], personMap = new Map();
+let entries = 0, exits = 0, unkCount = 0, alertCount = 0, totalFaces = 0;
+let dwellData = new Map(), lastDetectionCount = 0, activeCam = 0;
+let lastAlertTime = null, mainSimRAF = null;
 
 function $(id) { return document.getElementById(id); }
 
@@ -301,7 +311,22 @@ function tick() {
 }
 setInterval(tick, 1000); tick();
 
-// ── LOAD FACE-API MODELS ──────────────────────────────────────────
+// ── MASTER SCENE TICK ─────────────────────────────────────────────
+function tickScenes() {
+  CAM_SCENES.forEach(scene => {
+    if (!scene) return;
+    scene.people.forEach(p => {
+      if (p.seated) return;
+      p.nx += p.vx; p.ny += p.vy;
+      if (p.nx < 0.07 || p.nx > 0.90) p.vx *= -1;
+      if (p.ny < 0.35 || p.ny > 0.87) p.vy *= -1;
+    });
+  });
+  requestAnimationFrame(tickScenes);
+}
+tickScenes();
+
+// ── LOAD FACE-API ─────────────────────────────────────────────────
 async function loadModels() {
   $('loadStatus').textContent = 'Loading detection models...';
   try {
@@ -321,338 +346,669 @@ async function loadModels() {
   }
 }
 
-// ── WEBCAM ────────────────────────────────────────────────────────
 async function startWebcam() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width:{ideal:1280}, height:{ideal:720}, facingMode:'user' },
-      audio: false
-    });
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'}, audio:false });
     const video = $('mainVideo');
     video.srcObject = stream;
     await new Promise(r => video.onloadedmetadata = r);
     video.play();
-
-    $('loading').style.opacity = '0';
-    $('loading').style.transition = 'opacity .5s';
+    $('loading').style.opacity = '0'; $('loading').style.transition = 'opacity .5s';
     setTimeout(() => $('loading').style.display='none', 500);
-
     buildThumbs();
-    entries = 3 + Math.floor(Math.random()*5);
-    $('bEntries').textContent = entries;
-    startDetection();
-    updateAI();
+    entries = 3 + Math.floor(Math.random()*5); $('bEntries').textContent = entries;
+    startDetection(); updateAI();
+    scheduleRooftopEvent();
   } catch(e) {
-    $('loadStatus').textContent = 'Camera access denied — click to retry';
+    $('loadStatus').textContent = 'Camera denied — click to retry';
     $('loading').onclick = () => startWebcam();
   }
 }
 
-// ── FACE DETECTION LOOP ───────────────────────────────────────────
+// ── FACE DETECTION ────────────────────────────────────────────────
 async function startDetection() {
-  const video = $('mainVideo');
-  const canvas = $('mainCanvas');
-
+  const video = $('mainVideo'), canvas = $('mainCanvas');
   async function detect() {
-    if (!faceApiLoaded || video.paused || video.ended) {
-      requestAnimationFrame(detect); return;
-    }
-
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-
-    const results = await faceapi
-      .detectAllFaces(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.45 }))
-      .withFaceLandmarks();
-
+    if (!faceApiLoaded || video.paused || video.ended) { requestAnimationFrame(detect); return; }
+    canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+    const results = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({minConfidence:0.45})).withFaceLandmarks();
     detections = results;
-    drawOverlays(results, canvas);
-    updateSidebar(results);
-
-    // Count total faces seen
-    if (results.length > lastDetectionCount) {
-      const newFaces = results.length - lastDetectionCount;
-      totalFaces += newFaces;
-      $('bFaces').textContent = totalFaces;
-    }
+    if (activeCam === 0) { drawOverlays(results, canvas); updateSidebar(results); }
+    if (results.length > lastDetectionCount) { totalFaces += results.length - lastDetectionCount; $('bFaces').textContent = totalFaces; }
     lastDetectionCount = results.length;
-
     setTimeout(() => requestAnimationFrame(detect), 150);
   }
   detect();
 }
 
-// ── ASSIGN IDENTITY ───────────────────────────────────────────────
 function getIdentity(idx) {
   if (!personMap.has(idx)) {
-    // 75% chance employee, 15% visitor, 10% unknown
     const r = Math.random();
-    if (r < 0.72) {
-      personMap.set(idx, EMPLOYEES[Math.floor(Math.random()*6)]);
-    } else if (r < 0.87) {
-      personMap.set(idx, EMPLOYEES[6]); // visitor
-    } else {
-      personMap.set(idx, { name:'Unknown Person', id:'NO MATCH', dept:'Not in database', role:'unk', col:'#ef4444' });
-    }
+    if (r < 0.72) personMap.set(idx, [{name:'Sarah K.',id:'EMP-0421',dept:'Engineering',role:'emp',col:'#22c55e'},{name:'James M.',id:'EMP-0198',dept:'Sales',role:'emp',col:'#22c55e'},{name:'Priya R.',id:'EMP-0337',dept:'Product',role:'emp',col:'#22c55e'},{name:'Daniel T.',id:'EMP-0512',dept:'Security',role:'emp',col:'#22c55e'},{name:'Aisha N.',id:'EMP-0089',dept:'HR',role:'emp',col:'#22c55e'},{name:'Marcus L.',id:'EMP-0274',dept:'Finance',role:'emp',col:'#22c55e'}][Math.floor(Math.random()*6)]);
+    else if (r < 0.87) personMap.set(idx, {name:'Guest Pass',id:'VIS-0001',dept:'Visitor',role:'vis',col:'#f59e0b'});
+    else personMap.set(idx, {name:'Unknown Person',id:'NO MATCH',dept:'Not in database',role:'unk',col:'#ef4444'});
   }
   return personMap.get(idx);
 }
 
-// ── DRAW OVERLAYS ─────────────────────────────────────────────────
 function drawOverlays(results, canvas) {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   results.forEach((det, i) => {
-    const box = det.detection.box;
-    const p = getIdentity(i);
-    const conf = Math.floor(det.detection.score * 100);
-
-    // Bounding box — corners only
-    ctx.strokeStyle = p.col;
-    ctx.lineWidth = 2;
-    const cs = 12;
-    const {x, y, width: w, height: h} = box;
+    const box = det.detection.box, p = getIdentity(i), conf = Math.floor(det.detection.score*100);
+    ctx.strokeStyle = p.col; ctx.lineWidth = 2;
+    const cs=12, {x,y,width:w,height:h} = box;
     ctx.beginPath();
-    ctx.moveTo(x, y+cs); ctx.lineTo(x,y); ctx.lineTo(x+cs,y);
-    ctx.moveTo(x+w-cs, y); ctx.lineTo(x+w,y); ctx.lineTo(x+w,y+cs);
-    ctx.moveTo(x+w, y+h-cs); ctx.lineTo(x+w,y+h); ctx.lineTo(x+w-cs,y+h);
-    ctx.moveTo(x+cs, y+h); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h-cs);
+    ctx.moveTo(x,y+cs);ctx.lineTo(x,y);ctx.lineTo(x+cs,y);
+    ctx.moveTo(x+w-cs,y);ctx.lineTo(x+w,y);ctx.lineTo(x+w,y+cs);
+    ctx.moveTo(x+w,y+h-cs);ctx.lineTo(x+w,y+h);ctx.lineTo(x+w-cs,y+h);
+    ctx.moveTo(x+cs,y+h);ctx.lineTo(x,y+h);ctx.lineTo(x,y+h-cs);
     ctx.stroke();
-
-    // Scan line effect on face
     if (p.role === 'unk') {
-      ctx.strokeStyle = 'rgba(239,68,68,.2)';
-      ctx.lineWidth = 1;
-      for (let sy = y; sy < y+h; sy += 6) {
-        ctx.beginPath(); ctx.moveTo(x, sy); ctx.lineTo(x+w, sy); ctx.stroke();
-      }
+      ctx.strokeStyle='rgba(239,68,68,.18)'; ctx.lineWidth=1;
+      for(let sy=y;sy<y+h;sy+=6){ctx.beginPath();ctx.moveTo(x,sy);ctx.lineTo(x+w,sy);ctx.stroke();}
     }
-
-    // Name card
-    const label = p.role === 'unk' ? 'UNKNOWN PERSON' : p.name.toUpperCase();
-    const sub = p.role === 'unk' ? `NO MATCH · ${conf}%` : `${p.id} · ${conf}%`;
-    const fs = 11;
-    ctx.font = `600 ${fs}px "SF Mono", monospace`;
-    const cardW = Math.max(ctx.measureText(label).width + 16, ctx.measureText(sub).width + 16);
-    const cardH = 34;
-    const cardX = x;
-    const cardY = y - cardH - 6;
-
-    ctx.fillStyle = 'rgba(0,0,0,.85)';
-    ctx.beginPath();
-    ctx.roundRect(cardX, Math.max(4, cardY), cardW, cardH, 3);
-    ctx.fill();
-
-    ctx.fillStyle = p.col;
-    ctx.textAlign = 'left';
-    ctx.fillText(label, cardX+8, Math.max(4,cardY)+15);
-    ctx.font = `${fs-1}px "SF Mono", monospace`;
-    ctx.fillStyle = 'rgba(255,255,255,.45)';
-    ctx.fillText(sub, cardX+8, Math.max(4,cardY)+28);
-
-    // Dwell time badge
+    const label = p.role==='unk' ? 'UNKNOWN PERSON' : p.name.toUpperCase();
+    const sub = p.role==='unk' ? `NO MATCH · ${conf}%` : `${p.id} · ${conf}%`;
+    ctx.font = `600 11px "SF Mono",monospace`;
+    const cw = Math.max(ctx.measureText(label).width+16, ctx.measureText(sub).width+16);
+    ctx.fillStyle='rgba(0,0,0,.85)'; ctx.beginPath(); ctx.roundRect(x, Math.max(4,y-40), cw, 34, 3); ctx.fill();
+    ctx.fillStyle=p.col; ctx.textAlign='left'; ctx.fillText(label, x+8, Math.max(4,y-40)+15);
+    ctx.font='10px "SF Mono",monospace'; ctx.fillStyle='rgba(255,255,255,.45)'; ctx.fillText(sub, x+8, Math.max(4,y-40)+28);
     if (!dwellData.has(i)) dwellData.set(i, Date.now());
-    const dwell = Math.floor((Date.now() - dwellData.get(i)) / 1000);
+    const dwell = Math.floor((Date.now()-dwellData.get(i))/1000);
     if (dwell > 2) {
-      const dtag = dwell + 's';
-      ctx.fillStyle = 'rgba(59,130,246,.85)';
-      ctx.beginPath();
-      ctx.roundRect(x + w/2 - 18, y+h+4, 36, 14, 6);
-      ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = '600 8px "SF Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(dtag, x+w/2, y+h+14);
+      ctx.fillStyle='rgba(59,130,246,.85)'; ctx.beginPath(); ctx.roundRect(x+w/2-18,y+h+4,36,14,6); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.font='600 8px "SF Mono",monospace'; ctx.textAlign='center'; ctx.fillText(dwell+'s',x+w/2,y+h+14);
     }
-
-    // Trigger unknown alert
-    if (p.role === 'unk' && !p._alerted) {
-      p._alerted = true;
-      triggerAlert(p, conf);
-    }
+    if (p.role==='unk' && !p._alerted) { p._alerted=true; triggerAlert(p,conf); }
   });
-
-  // Clear dwell for faces no longer in frame
   if (results.length < dwellData.size) {
-    const toDelete = [];
-    dwellData.forEach((_, k) => { if (k >= results.length) toDelete.push(k); });
-    toDelete.forEach(k => { dwellData.delete(k); personMap.delete(k); });
+    const del = []; dwellData.forEach((_,k) => { if(k>=results.length) del.push(k); });
+    del.forEach(k => { dwellData.delete(k); personMap.delete(k); });
     exits++; $('bExits').textContent = exits;
   }
 }
 
-// ── TRIGGER ALERT ─────────────────────────────────────────────────
-function triggerAlert(p, conf) {
-  alertCount++;
-  unkCount++;
-  lastAlertTime = new Date().toTimeString().slice(0,8);
-  $('kAlerts').textContent = alertCount;
-  $('bUnk').textContent = unkCount;
-  $('mTime').textContent = lastAlertTime;
-  $('mConf').textContent = conf + '% — No match in employee database';
-
-  const overlay = $('alertOverlay');
-  overlay.style.display = 'block';
-  overlay.querySelector('.ab').textContent = `Unknown person detected · ${CAM_LABELS[activeCam].split('·')[0].trim()} · ${lastAlertTime}`;
-  $('thumbStrip').children[activeCam]?.querySelector('.thumb-alert')?.style.setProperty('display','block');
-  setTimeout(() => overlay.style.display='none', 6000);
+// ── ROOM BACKGROUNDS ──────────────────────────────────────────────
+function drawRoomBg(ctx, zone, w, h) {
+  ctx.clearRect(0,0,w,h);
+  if (zone==='lobby')     drawLobby(ctx,w,h);
+  else if (zone==='server')    drawServer(ctx,w,h);
+  else if (zone==='parking')   drawParking(ctx,w,h);
+  else if (zone==='rooftop')   drawRooftop(ctx,w,h);
+  else if (zone==='corridor')  drawCorridor(ctx,w,h);
+  else if (zone==='reception') drawReception(ctx,w,h);
+  else if (zone==='exit')      drawExit(ctx,w,h);
+  else { ctx.fillStyle='#0a0b0d'; ctx.fillRect(0,0,w,h); }
 }
 
-// ── SIDEBAR UPDATE ────────────────────────────────────────────────
-function updateSidebar(results) {
-  $('kOcc').textContent = results.length;
-  const empCount = results.filter((_, i) => {
-    const p = getIdentity(i);
-    return p && p.role === 'emp';
-  }).length;
-  $('kEmp').textContent = empCount;
+function drawLobby(ctx, w, h) {
+  ctx.fillStyle='#0c0d10'; ctx.fillRect(0,0,w,h);
+  // Floor
+  const fg = ctx.createLinearGradient(0,h*0.42,0,h);
+  fg.addColorStop(0,'#111318'); fg.addColorStop(1,'#0d0e12');
+  ctx.fillStyle=fg; ctx.fillRect(0,h*0.42,w,h*0.58);
+  // Perspective tiles
+  ctx.strokeStyle='#161820'; ctx.lineWidth=0.5;
+  for(let i=1;i<=4;i++){const y=h*0.42+h*0.58*(i/5);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  [0.25,0.5,0.75].forEach(vx=>{
+    ctx.beginPath();ctx.moveTo(vx*w,h*0.42);ctx.lineTo(vx*w+(vx-0.5)*w*0.4,h);ctx.stroke();
+  });
+  // Reception desk
+  ctx.fillStyle='#1a1c22'; ctx.beginPath(); ctx.roundRect(w*0.18,h*0.54,w*0.64,h*0.20,2); ctx.fill();
+  ctx.strokeStyle='#252830'; ctx.lineWidth=0.8; ctx.stroke();
+  ctx.fillStyle='#1e2028'; ctx.fillRect(w*0.20,h*0.62,w*0.60,h*0.11);
+  // Monitor on desk
+  ctx.fillStyle='#111418'; ctx.fillRect(w*0.52,h*0.49,w*0.11,h*0.07);
+  ctx.fillStyle='#1a2435'; ctx.fillRect(w*0.53,h*0.50,w*0.09,h*0.055);
+  // Waiting chairs
+  [[0.07,0.72],[0.84,0.72]].forEach(([cx,cy])=>{
+    ctx.fillStyle='#161820'; ctx.beginPath(); ctx.roundRect(cx*w,cy*h,w*0.08,h*0.16,2); ctx.fill();
+    ctx.strokeStyle='#1e2028'; ctx.lineWidth=0.5; ctx.stroke();
+  });
+  // Plant
+  ctx.fillStyle='#0d1510'; ctx.beginPath(); ctx.arc(w*0.10,h*0.61,w*0.03,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#0e1a12'; ctx.fillRect(w*0.097,h*0.61,w*0.006,h*0.07);
+  // Logo on wall
+  ctx.font=`bold ${w*0.06}px sans-serif`; ctx.fillStyle='rgba(255,255,255,.055)';
+  ctx.textAlign='center'; ctx.fillText('VERKADA',w/2,h*0.30);
+  ctx.font=`${w*0.028}px "SF Mono",monospace`; ctx.fillStyle='rgba(255,255,255,.04)';
+  ctx.fillText('HEADQUARTERS',w/2,h*0.38);
+}
 
-  // Dwell avg
-  let totalDwell = 0;
-  dwellData.forEach(start => totalDwell += Date.now() - start);
-  if (dwellData.size > 0) {
-    $('kDwell').textContent = Math.floor(totalDwell / dwellData.size / 1000) + 's';
-  }
+function drawServer(ctx, w, h) {
+  ctx.fillStyle='#05060a'; ctx.fillRect(0,0,w,h);
+  // Floor
+  ctx.fillStyle='#080910'; ctx.fillRect(0,h*0.78,w,h*0.22);
+  ctx.strokeStyle='#0d0e14'; ctx.lineWidth=0.5;
+  [0.82,0.90,0.97].forEach(ly=>{ctx.beginPath();ctx.moveTo(0,ly*h);ctx.lineTo(w,ly*h);ctx.stroke();});
+  // Server racks
+  const rw=w*0.13, rh=h*0.64, ry=h*0.10;
+  [0.14,0.42,0.70].forEach(rx=>{
+    const x=rx*w;
+    ctx.fillStyle='#0c0d15'; ctx.fillRect(x-rw/2,ry,rw,rh);
+    ctx.strokeStyle='#18192a'; ctx.lineWidth=0.8; ctx.strokeRect(x-rw/2,ry,rw,rh);
+    // Unit slots
+    ctx.strokeStyle='#10111a'; ctx.lineWidth=0.4;
+    for(let u=ry+6;u<ry+rh-4;u+=7){ctx.beginPath();ctx.moveTo(x-rw/2+2,u);ctx.lineTo(x+rw/2-2,u);ctx.stroke();}
+    // LEDs
+    for(let li=0;li<10;li++){
+      const ly2=ry+12+li*(rh-24)/10;
+      const on=Math.random()>0.25, col=Math.random()>0.65?'#f59e0b':'#22c55e';
+      ctx.fillStyle=on?col:'#141520'; ctx.beginPath(); ctx.arc(x-rw/2+5,ly2,1.4,0,Math.PI*2); ctx.fill();
+    }
+    // Port activity
+    for(let pi=0;pi<5;pi++){
+      const py=ry+18+pi*13;
+      ctx.fillStyle=Math.random()>0.45?'rgba(59,130,246,.8)':'#12141e';
+      ctx.fillRect(x+rw/2-8,py-1,5,2);
+    }
+  });
+  // Cable floor conduit
+  ctx.fillStyle='#0a0b12'; ctx.fillRect(0,h*0.76,w,h*0.02);
+  [0.14,0.42,0.70].forEach(rx=>{
+    ctx.fillStyle='#0c0d18'; ctx.fillRect(rx*w-3,h*0.74,6,h*0.06);
+  });
+  // Temperature
+  ctx.font=`${w*0.038}px "SF Mono",monospace`; ctx.fillStyle='rgba(59,130,246,.45)';
+  ctx.textAlign='right'; ctx.fillText(`${19+Math.floor(Math.random()*3)}°C`,w-6,h*0.07);
+  // Restricted watermark
+  ctx.font=`bold ${w*0.036}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.07)';
+  ctx.textAlign='center'; ctx.fillText('RESTRICTED ACCESS',w/2,h*0.50);
+  ctx.font=`${w*0.026}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.05)';
+  ctx.fillText('AUTHORIZED PERSONNEL ONLY',w/2,h*0.57);
+}
 
-  // Who list
-  const wl = $('whoList');
-  wl.innerHTML = '';
-  results.forEach((_, i) => {
-    const p = getIdentity(i);
-    const dwell = Math.floor((Date.now() - (dwellData.get(i)||Date.now())) / 1000);
-    const badge = p.role==='emp' ? 'b-emp' : p.role==='vis' ? 'b-vis' : 'b-unk';
-    const badgeTxt = p.role==='emp' ? 'Employee' : p.role==='vis' ? 'Visitor' : 'Unknown';
-    const row = document.createElement('div');
-    row.className = 'who-row' + (p.role==='unk' ? ' unk' : '');
-    row.innerHTML = `<div class="pip" style="background:${p.col}"></div><div class="who-info"><div class="who-name">${p.name}</div><div class="who-dept">${p.id} · ${p.dept}</div></div><span class="who-badge ${badge}">${badgeTxt}</span><div class="who-dwell">${dwell}s</div>`;
-    wl.appendChild(row);
+function drawParking(ctx, w, h) {
+  ctx.fillStyle='#0b0c0f'; ctx.fillRect(0,0,w,h);
+  // Ceiling
+  ctx.fillStyle='#090a0d'; ctx.fillRect(0,0,w,h*0.28);
+  // Beams
+  [0.2,0.5,0.8].forEach(bx=>{
+    ctx.fillStyle='#0e0f13'; ctx.fillRect(bx*w-w*0.015,0,w*0.03,h*0.32);
+    ctx.strokeStyle='#151618'; ctx.lineWidth=0.5; ctx.stroke();
+  });
+  // Floor
+  ctx.fillStyle='#0e0f12'; ctx.fillRect(0,h*0.28,w,h*0.72);
+  // Parking lanes
+  ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=0.8; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(0,h*0.28); ctx.lineTo(w,h*0.28); ctx.stroke();
+  // Space dividers
+  ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=0.6; ctx.setLineDash([3,4]);
+  for(let i=0;i<=5;i++){const lx=(i/5)*w;ctx.beginPath();ctx.moveTo(lx,h*0.28);ctx.lineTo(lx,h);ctx.stroke();}
+  ctx.setLineDash([]);
+  // Drive lane
+  ctx.strokeStyle='rgba(245,158,11,.15)'; ctx.lineWidth=0.8; ctx.setLineDash([8,7]);
+  ctx.beginPath(); ctx.moveTo(0,h*0.58); ctx.lineTo(w,h*0.58); ctx.stroke();
+  ctx.setLineDash([]);
+  // Cars
+  [{x:0.02,y:0.34,w:0.18,h:0.17,c:'#181922'},{x:0.22,y:0.34,w:0.18,h:0.17,c:'#141518'},{x:0.42,y:0.34,w:0.18,h:0.17,c:'#1a1b20'},{x:0.62,y:0.34,w:0.18,h:0.17,c:'#161720'}].forEach(car=>{
+    ctx.fillStyle=car.c; ctx.beginPath(); ctx.roundRect(car.x*w,car.y*h,car.w*w,car.h*h,2); ctx.fill();
+    ctx.strokeStyle='#222328'; ctx.lineWidth=0.5; ctx.stroke();
+    // Headlights
+    ctx.fillStyle='rgba(255,255,200,.35)'; ctx.fillRect(car.x*w+2,car.y*h+car.h*h*0.2,2,2);
+    ctx.fillRect(car.x*w+2,car.y*h+car.h*h*0.65,2,2);
+    // Plate
+    ctx.fillStyle='rgba(255,255,255,.08)'; ctx.fillRect((car.x+car.w*0.3)*w,(car.y+car.h*0.35)*h,car.w*w*0.4,car.h*h*0.28);
+  });
+  // LPR label
+  ctx.font=`bold ${w*0.037}px "SF Mono",monospace`; ctx.fillStyle='rgba(59,130,246,.35)';
+  ctx.textAlign='center'; ctx.fillText('LEVEL B1 · LPR ACTIVE',w/2,h*0.18);
+  ctx.font=`${w*0.025}px "SF Mono",monospace`; ctx.fillStyle='rgba(59,130,246,.2)';
+  ctx.fillText('14 VEHICLES REGISTERED',w/2,h*0.24);
+}
+
+function drawRooftop(ctx, w, h) {
+  const sky=ctx.createLinearGradient(0,0,0,h*0.52);
+  sky.addColorStop(0,'#04040a'); sky.addColorStop(1,'#08090e');
+  ctx.fillStyle=sky; ctx.fillRect(0,0,w,h);
+  // Horizon glow
+  const hor=ctx.createLinearGradient(0,h*0.48,0,h*0.58);
+  hor.addColorStop(0,'rgba(59,130,246,.04)'); hor.addColorStop(1,'transparent');
+  ctx.fillStyle=hor; ctx.fillRect(0,h*0.48,w,h*0.10);
+  // Roof surface
+  ctx.fillStyle='#0c0d11'; ctx.fillRect(0,h*0.52,w,h*0.48);
+  ctx.strokeStyle='#141518'; ctx.lineWidth=0.5;
+  [0.62,0.75,0.88].forEach(ly=>{ctx.beginPath();ctx.moveTo(0,ly*h);ctx.lineTo(w,ly*h);ctx.stroke();});
+  // AC units
+  [[0.13,0.57],[0.74,0.59]].forEach(([ux,uy])=>{
+    ctx.fillStyle='#141618'; ctx.fillRect(ux*w,uy*h,w*0.15,h*0.14);
+    ctx.strokeStyle='#1e2028'; ctx.lineWidth=0.5; ctx.stroke();
+    for(let v=0;v<4;v++){ctx.strokeStyle='#0f1014';ctx.lineWidth=0.3;ctx.beginPath();ctx.moveTo(ux*w,uy*h+v*h*0.038);ctx.lineTo((ux+0.15)*w,uy*h+v*h*0.038);ctx.stroke();}
+  });
+  // Vent pipes
+  [[0.50,0.53],[0.34,0.57],[0.60,0.60]].forEach(([px,py])=>{
+    ctx.fillStyle='#111318'; ctx.beginPath(); ctx.arc(px*w,py*h,w*0.018,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#1a1b20'; ctx.lineWidth=0.5; ctx.stroke();
+  });
+  // Warning
+  ctx.font=`bold ${w*0.036}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.18)';
+  ctx.textAlign='center'; ctx.fillText('NO AUTHORIZED ACCESS',w/2,h*0.15);
+  ctx.font=`${w*0.026}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.12)';
+  ctx.fillText('MOTION DETECTION ACTIVE',w/2,h*0.22);
+  // Stars (far)
+  ctx.fillStyle='rgba(255,255,255,.3)';
+  [[0.1,0.08],[0.3,0.12],[0.55,0.05],[0.72,0.18],[0.85,0.08],[0.20,0.22],[0.65,0.28]].forEach(([sx,sy])=>{
+    ctx.fillRect(sx*w,sy*h,1,1);
   });
 }
 
-// ── AI SUMMARY ────────────────────────────────────────────────────
-const summaries = [
-  (n, e, u) => `${n} ${n===1?'person':'people'} in frame. ${e} employee${e!==1?'s':''} recognized. All access points secured.`,
-  (n, e, u) => `Monitoring ${n} individual${n!==1?'s':''}. ${u>0 ? `⚠ ${u} unknown — security notified.` : 'All personnel verified.'}`,
-  (n, e, u) => `Normal occupancy levels. ${e} of ${n} positively identified as staff. ${u>0?`${u} unverified.`:'No access violations.'}`,
-  (n, e, u) => `${n===0 ? 'No activity detected. All clear.' : `Active surveillance: ${e} employee${e!==1?'s':''} on site.${u>0?' Alert: unknown individual present.':''}`}`,
-];
-let summaryIdx = 0;
-function updateAI() {
-  const n = detections.length;
-  const e = Array.from({length:n}, (_,i) => getIdentity(i)).filter(p=>p&&p.role==='emp').length;
-  const u = Array.from({length:n}, (_,i) => getIdentity(i)).filter(p=>p&&p.role==='unk').length;
-  $('aiText').textContent = summaries[summaryIdx % summaries.length](n,e,u);
-  summaryIdx++;
-  setTimeout(updateAI, 4000);
+function drawCorridor(ctx, w, h) {
+  ctx.fillStyle='#0c0d10'; ctx.fillRect(0,0,w,h);
+  const vx=w/2, vy=h*0.44;
+  // Floor
+  const fc=ctx.createLinearGradient(0,vy,0,h);
+  fc.addColorStop(0,'#101218'); fc.addColorStop(1,'#0c0d11');
+  ctx.fillStyle=fc;
+  ctx.beginPath(); ctx.moveTo(0,h); ctx.lineTo(vx,vy); ctx.lineTo(w,h); ctx.closePath(); ctx.fill();
+  // Ceiling
+  const cc=ctx.createLinearGradient(0,0,0,vy);
+  cc.addColorStop(0,'#0a0b0e'); cc.addColorStop(1,'#0e0f13');
+  ctx.fillStyle=cc;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(vx,vy); ctx.lineTo(w,0); ctx.closePath(); ctx.fill();
+  // Walls
+  ctx.fillStyle='#0d0e12';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(vx,vy); ctx.lineTo(0,h); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(w,0); ctx.lineTo(vx,vy); ctx.lineTo(w,h); ctx.closePath(); ctx.fill();
+  // Floor perspective lines
+  ctx.strokeStyle='#181a20'; ctx.lineWidth=0.5;
+  for(let i=1;i<=4;i++){
+    const t=i/5; const y=vy+(h-vy)*t;
+    const lx=vx+(0-vx)*t, rx=vx+(w-vx)*t;
+    ctx.beginPath(); ctx.moveTo(lx,y); ctx.lineTo(rx,y); ctx.stroke();
+  }
+  // Wall lines
+  ctx.strokeStyle='#141518'; ctx.lineWidth=0.7;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(vx,vy); ctx.lineTo(0,h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w,0); ctx.lineTo(vx,vy); ctx.lineTo(w,h); ctx.stroke();
+  // Side doors
+  [[w*0.03,h*0.55,w*0.09,h*0.28],[w*0.88,h*0.55,w*0.09,h*0.28]].forEach(([dx,dy,dw,dh])=>{
+    ctx.fillStyle='#0b0c10'; ctx.fillRect(dx,dy-dh,dw,dh);
+    ctx.strokeStyle='#181a22'; ctx.lineWidth=0.5; ctx.strokeRect(dx,dy-dh,dw,dh);
+    ctx.fillStyle='rgba(59,130,246,.15)'; ctx.fillRect(dx+dw-3,dy-dh/2-3,3,6);
+  });
+  // Ceiling lights
+  ctx.fillStyle='rgba(255,255,255,.09)';
+  [0.3,0.5,0.7].forEach(lx=>{ctx.beginPath();ctx.ellipse(lx*w,vy+2,w*0.05,4,0,0,Math.PI*2);ctx.fill();});
+  // Badge sign
+  ctx.font=`${w*0.03}px "SF Mono",monospace`; ctx.fillStyle='rgba(245,158,11,.35)';
+  ctx.textAlign='center'; ctx.fillText('EMPLOYEES ONLY · BADGE ACCESS REQUIRED',w/2,h*0.07);
+}
+
+function drawReception(ctx, w, h) {
+  ctx.fillStyle='#0d0e12'; ctx.fillRect(0,0,w,h);
+  // Floor
+  ctx.fillStyle='#111318'; ctx.fillRect(0,h*0.38,w,h*0.62);
+  ctx.strokeStyle='#161820'; ctx.lineWidth=0.5;
+  [0.5,0.65,0.80,0.92].forEach(ly=>{ctx.beginPath();ctx.moveTo(0,ly*h);ctx.lineTo(w,ly*h);ctx.stroke();});
+  // Curved reception desk
+  ctx.fillStyle='#191b22';
+  ctx.beginPath(); ctx.arc(w/2,h*1.1,w*0.42,Math.PI*1.05,Math.PI*1.95,false);
+  ctx.lineTo(w*0.88,h*0.62); ctx.lineTo(w*0.12,h*0.62); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#252830'; ctx.lineWidth=0.8; ctx.stroke();
+  // Desk face
+  ctx.fillStyle='#1e2028';
+  ctx.beginPath(); ctx.arc(w/2,h*1.1,w*0.39,Math.PI*1.08,Math.PI*1.92,false);
+  ctx.lineTo(w*0.86,h*0.65); ctx.lineTo(w*0.14,h*0.65); ctx.closePath(); ctx.fill();
+  // Monitor on desk
+  ctx.fillStyle='#111418'; ctx.fillRect(w*0.52,h*0.50,w*0.10,h*0.075);
+  ctx.fillStyle='#142030'; ctx.fillRect(w*0.53,h*0.51,w*0.08,h*0.055);
+  // Waiting couch
+  ctx.fillStyle='#161820'; ctx.beginPath(); ctx.roundRect(w*0.03,h*0.65,w*0.22,h*0.18,3); ctx.fill();
+  ctx.strokeStyle='#1e2028'; ctx.lineWidth=0.5; ctx.stroke();
+  // Plant
+  ctx.fillStyle='#0e1810'; ctx.beginPath(); ctx.arc(w*0.87,h*0.60,w*0.03,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#111e14'; ctx.fillRect(w*0.868,h*0.60,w*0.004,h*0.06);
+  // Logo
+  ctx.font=`bold ${w*0.058}px sans-serif`; ctx.fillStyle='rgba(255,255,255,.06)';
+  ctx.textAlign='center'; ctx.fillText('VERKADA',w/2,h*0.24);
+  ctx.font=`${w*0.028}px "SF Mono",monospace`; ctx.fillStyle='rgba(245,158,11,.25)';
+  ctx.fillText('VISITOR CHECK-IN',w/2,h*0.32);
+}
+
+function drawExit(ctx, w, h) {
+  ctx.fillStyle='#06070a'; ctx.fillRect(0,0,w,h);
+  // Warning floor stripes
+  const sw=h*0.12;
+  for(let i=0;i<14;i++){
+    ctx.fillStyle=i%2===0?'rgba(239,68,68,.07)':'rgba(0,0,0,.3)';
+    ctx.fillRect(i*(w/14),h-sw,w/14,sw);
+  }
+  ctx.strokeStyle='rgba(239,68,68,.1)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,h-sw); ctx.lineTo(w,h-sw); ctx.stroke();
+  // Door frame
+  const dx=w*0.2,dy=h*0.08,dw=w*0.6,dh=h*0.76;
+  ctx.fillStyle='#0e0f13'; ctx.fillRect(dx-4,dy-4,dw+8,dh+4);
+  ctx.strokeStyle='#222430'; ctx.lineWidth=1.5; ctx.strokeRect(dx-4,dy-4,dw+8,dh+4);
+  // Door surface
+  ctx.fillStyle='#111318'; ctx.fillRect(dx,dy,dw,dh);
+  ctx.strokeStyle='#1a1c24'; ctx.lineWidth=0.8; ctx.strokeRect(dx,dy,dw,dh);
+  // Door panel lines
+  ctx.strokeStyle='#161820'; ctx.lineWidth=0.4;
+  [0.35,0.65].forEach(py=>{ctx.beginPath();ctx.moveTo(dx+dw*0.1,dy+dh*py);ctx.lineTo(dx+dw*0.9,dy+dh*py);ctx.stroke();});
+  // Push bar
+  ctx.fillStyle='#222430'; ctx.beginPath(); ctx.roundRect(dx+dw*0.1,dy+dh*0.44,dw*0.8,dh*0.045,2); ctx.fill();
+  ctx.strokeStyle='#2e3040'; ctx.lineWidth=0.5; ctx.stroke();
+  // EXIT sign
+  ctx.fillStyle='rgba(34,197,94,.15)'; ctx.fillRect(dx+dw*0.2,dy-h*0.065,dw*0.6,h*0.055);
+  ctx.font=`bold ${w*0.065}px sans-serif`; ctx.fillStyle='rgba(34,197,94,.9)';
+  ctx.textAlign='center'; ctx.fillText('EXIT',w/2,dy-h*0.025);
+  // Alarm sensor
+  ctx.fillStyle='rgba(239,68,68,.6)'; ctx.beginPath(); ctx.arc(dx+dw*0.88,dy+dh*0.08,4,0,Math.PI*2); ctx.fill();
+  // Warning text
+  ctx.font=`${w*0.03}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.3)';
+  ctx.fillText('EMERGENCY USE ONLY',w/2,h*0.94);
+  ctx.font=`${w*0.022}px "SF Mono",monospace`; ctx.fillStyle='rgba(239,68,68,.18)';
+  ctx.fillText('ALARM ARMED · WILL SOUND IF OPENED',w/2,h*0.97);
+}
+
+// ── DRAW SIMULATED PERSON ─────────────────────────────────────────
+function drawSimPerson(ctx, p, w, h, large) {
+  const x=p.nx*w, y=p.ny*h, sz=p.sz*Math.min(w,h);
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,.3)';
+  ctx.beginPath(); ctx.ellipse(x,y+sz*0.62,sz*0.28,sz*0.06,0,0,Math.PI*2); ctx.fill();
+  // Body
+  ctx.fillStyle='#1e2028';
+  ctx.beginPath(); ctx.ellipse(x,y+sz*0.38,sz*0.27,sz*0.52,0,0,Math.PI*2); ctx.fill();
+  // Head
+  ctx.fillStyle='#252830';
+  ctx.beginPath(); ctx.arc(x,y-sz*0.12,sz*0.20,0,Math.PI*2); ctx.fill();
+  // Detection corners
+  const bx=x-sz*0.40, by=y-sz*0.42, bw=sz*0.80, bh=sz*1.06;
+  const cs=large?10:Math.max(4,sz*0.18);
+  ctx.strokeStyle=p.col; ctx.lineWidth=large?1.5:0.8;
+  ctx.beginPath();
+  ctx.moveTo(bx,by+cs);ctx.lineTo(bx,by);ctx.lineTo(bx+cs,by);
+  ctx.moveTo(bx+bw-cs,by);ctx.lineTo(bx+bw,by);ctx.lineTo(bx+bw,by+cs);
+  ctx.moveTo(bx+bw,by+bh-cs);ctx.lineTo(bx+bw,by+bh);ctx.lineTo(bx+bw-cs,by+bh);
+  ctx.moveTo(bx+cs,by+bh);ctx.lineTo(bx,by+bh);ctx.lineTo(bx,by+bh-cs);
+  ctx.stroke();
+  // Scan line for unknown
+  if (p.role==='unk') {
+    ctx.strokeStyle='rgba(239,68,68,.15)'; ctx.lineWidth=0.5;
+    for(let sy=by;sy<by+bh;sy+=5){ctx.beginPath();ctx.moveTo(bx,sy);ctx.lineTo(bx+bw,sy);ctx.stroke();}
+  }
+  // Name card
+  const minSz = large ? 0 : 0.045*Math.min(w,h);
+  if (sz > minSz || large) {
+    const shortName = p.role==='unk' ? 'UNKNOWN' : p.name.split('·')[0].trim().toUpperCase();
+    const fs = large ? 11 : Math.max(6, sz*0.50);
+    ctx.font = `600 ${fs}px "SF Mono",monospace`;
+    const cw = ctx.measureText(shortName).width + (large?14:8);
+    const ch = large ? 22 : 13;
+    const cx = bx, cy = Math.max(2, by - ch - 2);
+    ctx.fillStyle='rgba(0,0,0,.85)'; ctx.beginPath(); ctx.roundRect(cx,cy,cw,ch,2); ctx.fill();
+    ctx.fillStyle=p.col; ctx.textAlign='left';
+    ctx.fillText(shortName, cx+(large?7:4), cy+ch*0.72);
+    if (large) {
+      ctx.font=`9px "SF Mono",monospace`; ctx.fillStyle='rgba(255,255,255,.35)';
+      ctx.fillText(p.id, cx+7, cy+ch+10);
+    }
+  }
 }
 
 // ── THUMBNAILS ────────────────────────────────────────────────────
 function buildThumbs() {
   const strip = $('thumbStrip');
   strip.innerHTML = '';
-  CAM_LABELS.forEach((label, i) => {
+  CAMERAS.forEach((cam, i) => {
     const div = document.createElement('div');
     div.className = 'thumb' + (i===0?' active':'');
     div.onclick = () => selectCam(i, div);
-    const shortLabel = label.split('·')[0].trim() + ' · ' + (label.split('·')[1]||'').trim();
-
+    const short = cam.short;
     if (i === 0) {
-      // Mirror the webcam
       div.innerHTML = `
+        <div class="thumb-sec" style="background:${cam.lc};"></div>
         <div class="thumb-live"></div>
-        <div class="thumb-alert"></div>
+        <div class="thumb-alert" id="ta0"></div>
         <video autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
-        <div class="thumb-label">${shortLabel}</div>
-        <div class="thumb-count" id="tc${i}">—</div>
-      `;
-      const tv = div.querySelector('video');
-      tv.srcObject = $('mainVideo').srcObject;
+        <div class="thumb-label">${cam.id} · ${short}</div>
+        <div class="thumb-count" id="tc0">—</div>`;
+      div.querySelector('video').srcObject = $('mainVideo').srcObject;
     } else {
-      // Simulated camera canvas
       div.innerHTML = `
+        <div class="thumb-sec" style="background:${cam.lc};"></div>
         <div class="thumb-live"></div>
-        <div class="thumb-alert"></div>
+        <div class="thumb-alert" id="ta${i}"></div>
         <canvas id="tc_canvas_${i}" style="width:100%;height:100%;"></canvas>
-        <div class="thumb-label">${shortLabel}</div>
-        <div class="thumb-count" id="tc${i}">—</div>
-      `;
-      setTimeout(() => animateThumb(i), i * 300);
+        <div class="thumb-label">${cam.id} · ${short}</div>
+        <div class="thumb-count" id="tc${i}">—</div>`;
+      setTimeout(() => animateThumb(i), i * 250);
     }
     strip.appendChild(div);
   });
 }
 
-// Simulated CCTV animation for thumbnail cameras
 function animateThumb(i) {
   const c = $(`tc_canvas_${i}`);
   if (!c) return;
-  c.width = 160; c.height = 110;
+  const W=160, H=110;
+  c.width=W; c.height=H;
   const ctx = c.getContext('2d');
-  const numPeople = Math.floor(Math.random()*3);
-  const people = Array.from({length:numPeople}, () => ({
-    x: Math.random()*120+20, y: Math.random()*60+25,
-    vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.2,
-    size: 10 + Math.random()*8,
-  }));
+  const cam = CAMERAS[i], scene = CAM_SCENES[i];
 
   function draw() {
-    ctx.fillStyle = '#0a0b0d';
-    ctx.fillRect(0,0,160,110);
-    // subtle grid
-    ctx.strokeStyle = '#111318'; ctx.lineWidth = .5;
-    for(let x=0;x<160;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,110);ctx.stroke();}
-    for(let y=0;y<110;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(160,y);ctx.stroke();}
-    // people blobs
-    people.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if(p.x<5||p.x>155) p.vx*=-1;
-      if(p.y<15||p.y>95) p.vy*=-1;
-      ctx.fillStyle='#1e2028';
-      ctx.beginPath(); ctx.ellipse(p.x,p.y+p.size*.4,p.size*.35,p.size*.6,0,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#252830';
-      ctx.beginPath(); ctx.arc(p.x,p.y-p.size*.2,p.size*.22,0,Math.PI*2); ctx.fill();
-      // box
-      ctx.strokeStyle='rgba(34,197,94,.6)'; ctx.lineWidth=.8;
-      ctx.strokeRect(p.x-p.size*.4, p.y-p.size*.6, p.size*.8, p.size*1.1);
-    });
-    // timestamp
+    drawRoomBg(ctx, cam.zone, W, H);
+    if (scene) {
+      scene.people.forEach(p => drawSimPerson(ctx, p, W, H, false));
+      const tc = $(`tc${i}`);
+      if (tc) tc.textContent = scene.people.length || '0';
+    }
+    // Timestamp
     ctx.font='6px "SF Mono",monospace'; ctx.fillStyle='rgba(255,255,255,.2)'; ctx.textAlign='left';
-    ctx.fillText(new Date().toTimeString().slice(0,8), 4, 106);
-    // update count
-    const tc = $(`tc${i}`);
-    if(tc) tc.textContent = people.length > 0 ? people.length : '0';
+    ctx.fillText(new Date().toTimeString().slice(0,8), 4, H-4);
     requestAnimationFrame(draw);
   }
   draw();
 }
 
+// ── MAIN SIMULATION (full-res) ─────────────────────────────────────
+function startMainSim(camIdx) {
+  const canvas = $('mainSimCanvas'), feed = $('mainFeed');
+  const cam = CAMERAS[camIdx], scene = CAM_SCENES[camIdx];
+
+  function frame() {
+    if (activeCam !== camIdx) return;
+    const W = feed.clientWidth||800, H = feed.clientHeight||500;
+    if (canvas.width !== W || canvas.height !== H) { canvas.width=W; canvas.height=H; }
+    const ctx = canvas.getContext('2d');
+    drawRoomBg(ctx, cam.zone, W, H);
+    if (scene) scene.people.forEach(p => drawSimPerson(ctx, p, W, H, true));
+    // Timestamp
+    ctx.font='11px "SF Mono",monospace'; ctx.fillStyle='rgba(255,255,255,.25)'; ctx.textAlign='left';
+    ctx.fillText(new Date().toISOString().replace('T',' ').slice(0,19)+' UTC', 14, H-10);
+    mainSimRAF = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ── SELECT CAMERA ─────────────────────────────────────────────────
 function selectCam(i, el) {
   activeCam = i;
   document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  $('mainLabel').textContent = CAM_LABELS[i];
-  $('mCam').textContent = CAM_LABELS[i].split('·')[0].trim() + ' · ' + (CAM_LABELS[i].split('·')[1]||'').trim();
+  const cam = CAMERAS[i];
+  $('mainLabel').textContent = `${cam.id} · ${cam.label}`;
+  $('mCam').textContent = `${cam.id} · ${cam.short}`;
+
+  // Security badge & corner brackets
+  const sb = $('secBadge');
+  sb.className = 'sec-badge';
+  ['cbTl','cbTr','cbBl','cbBr'].forEach(id => $(id).style.display='none');
+  if (cam.level==='restricted') {
+    sb.textContent='⬤  RESTRICTED ZONE'; sb.classList.add('sl-restricted');
+    ['cbTl','cbTr','cbBl','cbBr'].forEach(id => $(id).style.display='block');
+  } else if (cam.level==='medium') {
+    sb.textContent='⬤  EMPLOYEES ONLY'; sb.classList.add('sl-medium');
+  } else if (cam.level==='alarm') {
+    sb.textContent='⚠  ALARM ZONE'; sb.classList.add('sl-alarm');
+    ['cbTl','cbTr','cbBl','cbBr'].forEach(id => $(id).style.display='block');
+  }
+
+  if (mainSimRAF) { cancelAnimationFrame(mainSimRAF); mainSimRAF=null; }
+
+  if (i === 0) {
+    $('mainVideo').style.display='block';
+    $('mainCanvas').style.display='block';
+    $('mainSimCanvas').style.display='none';
+    updateSidebar(detections);
+  } else {
+    $('mainVideo').style.display='none';
+    $('mainCanvas').style.display='none';
+    $('mainSimCanvas').style.display='block';
+    startMainSim(i);
+    updateSidebarForCam(i);
+  }
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────
+// ── SIDEBAR — LIVE ────────────────────────────────────────────────
+function updateSidebar(results) {
+  $('kOcc').textContent = results.length;
+  const empCount = results.filter((_,i)=>getIdentity(i)&&getIdentity(i).role==='emp').length;
+  $('kEmp').textContent = empCount;
+  let tot=0; dwellData.forEach(s=>tot+=Date.now()-s);
+  if (dwellData.size>0) $('kDwell').textContent = Math.floor(tot/dwellData.size/1000)+'s';
+  const wl=$('whoList'); wl.innerHTML='';
+  results.forEach((_,i)=>{
+    const p=getIdentity(i), dwell=Math.floor((Date.now()-(dwellData.get(i)||Date.now()))/1000);
+    const badge=p.role==='emp'?'b-emp':p.role==='vis'?'b-vis':'b-unk';
+    const bt=p.role==='emp'?'Employee':p.role==='vis'?'Visitor':'Unknown';
+    const row=document.createElement('div'); row.className='who-row'+(p.role==='unk'?' unk':'');
+    row.innerHTML=`<div class="pip" style="background:${p.col}"></div><div class="who-info"><div class="who-name">${p.name}</div><div class="who-dept">${p.id} · ${p.dept}</div></div><span class="who-badge ${badge}">${bt}</span><div class="who-dwell">${dwell}s</div>`;
+    wl.appendChild(row);
+  });
+  // Cam info row
+  const cam=CAMERAS[0];
+  $('camInfoName').textContent=`${cam.id} · ${cam.short}`;
+  $('camInfoDesc').textContent=cam.desc;
+  $('camSecPill').textContent=cam.level.toUpperCase();
+  $('camSecPill').className='sec-pill sp-'+cam.level;
+}
+
+// ── SIDEBAR — SIMULATED CAM ────────────────────────────────────────
+function updateSidebarForCam(i) {
+  const cam=CAMERAS[i], scene=CAM_SCENES[i], people=scene?scene.people:[];
+  const empCount=people.filter(p=>p.role==='emp').length;
+  const visCount=people.filter(p=>p.role==='vis').length;
+  const unkC=people.filter(p=>p.role==='unk').length;
+
+  $('kOcc').textContent=people.length;
+  $('kEmp').textContent=empCount;
+  $('kDwell').textContent=people.length>0?(Math.floor(Math.random()*90+20)+'s'):'—';
+
+  $('camInfoName').textContent=`${cam.id} · ${cam.short}`;
+  $('camInfoDesc').textContent=cam.desc;
+  $('camSecPill').textContent=cam.level.toUpperCase();
+  $('camSecPill').className='sec-pill sp-'+cam.level;
+
+  const wl=$('whoList'); wl.innerHTML='';
+  if (people.length===0) {
+    const row=document.createElement('div');
+    row.style.cssText='padding:16px 14px;font-size:11px;color:var(--muted);line-height:1.6;';
+    row.textContent=(cam.level==='restricted'||cam.level==='alarm')
+      ?'No personnel detected. Zone secured.':'No activity detected in this zone.';
+    wl.appendChild(row);
+  } else {
+    people.forEach(p=>{
+      const badge=p.role==='emp'?'b-emp':p.role==='vis'?'b-vis':'b-unk';
+      const bt=p.role==='emp'?'Employee':p.role==='vis'?'Visitor':'Unknown';
+      const dwell=Math.floor(Math.random()*80+15);
+      const row=document.createElement('div'); row.className='who-row'+(p.role==='unk'?' unk':'');
+      row.innerHTML=`<div class="pip" style="background:${p.col}"></div><div class="who-info"><div class="who-name">${p.name}</div><div class="who-dept">${p.id} · ${p.dept}</div></div><span class="who-badge ${badge}">${bt}</span><div class="who-dwell">${dwell}s</div>`;
+      wl.appendChild(row);
+    });
+  }
+
+  // AI text
+  const n=people.length, e=empCount, u=unkC;
+  const ai = {
+    server:  n>0?`Restricted zone: ${e} authorized technician${e!==1?'s':''} present. 2FA verified. Access logged.`:'Server room secured. No personnel on site. Environmental monitoring nominal.',
+    rooftop: n>0?`⚠ ALERT: Unauthorized activity detected on rooftop. Security team dispatched.`:'Rooftop secured. No activity detected. Perimeter intact.',
+    exit:    `Emergency exit secured. Alarm armed. No unauthorized entry/exit detected.`,
+    lobby:   `Lobby: ${n} individual${n!==1?'s':''} present. ${visCount} visitor${visCount!==1?'s':''} checked in. Reception staffed.`,
+    parking: `Parking B1: ${n} pedestrian${n!==1?'s':''} detected. 14 vehicles registered. LPR scanning active.`,
+    corridor:`Corridor FL3: ${n} employee${n!==1?'s':''} in transit. Badge access verified at all entry points.`,
+    reception:`Reception: ${n} person${n!==1?'s':''} present. ${visCount} visitor${visCount!==1?'s':''} in queue. ${e} employee${e!==1?'s':''} on duty.`,
+  }[cam.zone] || `Camera ${cam.id}: ${n} individual${n!==1?'s':''} detected.${u>0?` ⚠ ${u} unidentified.`:' All personnel verified.'}`;
+  $('aiText').textContent=ai;
+}
+
+// ── AI SUMMARY (live cam) ─────────────────────────────────────────
+const aiLines = [
+  (n,e,u) => `${n} ${n===1?'person':'people'} in frame. ${e} employee${e!==1?'s':''} recognized. All access points secured.`,
+  (n,e,u) => `Monitoring ${n} individual${n!==1?'s':''}. ${u>0?`⚠ ${u} unknown — security notified.`:'All personnel verified.'}`,
+  (n,e,u) => `Normal occupancy levels. ${e} of ${n} positively identified as staff.${u>0?` ${u} unverified.`:' No access violations.'}`,
+  (n,e,u) => n===0?'No activity detected. All clear.':`Active surveillance: ${e} employee${e!==1?'s':''} on site.${u>0?` Alert: unknown individual present.`:''}`,
+];
+let aiIdx=0;
+function updateAI() {
+  if (activeCam!==0) { setTimeout(updateAI,4000); return; }
+  const n=detections.length;
+  const e=Array.from({length:n},(_,i)=>getIdentity(i)).filter(p=>p&&p.role==='emp').length;
+  const u=Array.from({length:n},(_,i)=>getIdentity(i)).filter(p=>p&&p.role==='unk').length;
+  $('aiText').textContent=aiLines[aiIdx%aiLines.length](n,e,u);
+  aiIdx++; setTimeout(updateAI,4000);
+}
+
+// ── ALERTS ────────────────────────────────────────────────────────
+function triggerAlert(p, conf) {
+  alertCount++; unkCount++;
+  lastAlertTime=new Date().toTimeString().slice(0,8);
+  $('kAlerts').textContent=alertCount; $('bUnk').textContent=unkCount;
+  $('mTime').textContent=lastAlertTime;
+  $('mConf').textContent=conf+'% — No match in employee database';
+  const ov=$('alertOverlay'); ov.style.display='block';
+  ov.querySelector('.ab').textContent=`Unknown person detected · ${CAMERAS[activeCam].id} · ${lastAlertTime}`;
+  document.querySelectorAll('.thumb')[activeCam]?.querySelector('.thumb-alert')?.style.setProperty('display','block');
+  setTimeout(()=>ov.style.display='none',6000);
+}
+
+function triggerSimAlert(camIdx, personName) {
+  alertCount++; unkCount++;
+  lastAlertTime=new Date().toTimeString().slice(0,8);
+  $('kAlerts').textContent=alertCount; $('bUnk').textContent=unkCount;
+  $('mTime').textContent=lastAlertTime;
+  $('mCam').textContent=`${CAMERAS[camIdx].id} · ${CAMERAS[camIdx].short}`;
+  $('mConf').textContent='94% — No match in authorized personnel database';
+  const ov=$('alertOverlay'); ov.style.display='block';
+  ov.querySelector('.ab').textContent=`${personName} — ${CAMERAS[camIdx].label} · ${lastAlertTime}`;
+  document.querySelectorAll('.thumb')[camIdx]?.querySelector('.thumb-alert')?.style.setProperty('display','block');
+  setTimeout(()=>{ov.style.display='none'; document.querySelectorAll('.thumb')[camIdx]?.querySelector('.thumb-alert')?.style.setProperty('display','none');},8000);
+}
+
+// ── PERIODIC ROOFTOP INTRUDER ─────────────────────────────────────
+function scheduleRooftopEvent() {
+  setTimeout(()=>{
+    const intruder={name:'UNKNOWN PERSON',id:'NO MATCH',dept:'Not in database',role:'unk',col:'#ef4444',nx:0.45,ny:0.72,vx:0.0008,vy:0,sz:0.052};
+    CAM_SCENES[4].people.push(intruder);
+    triggerSimAlert(4,'Unauthorized person on rooftop');
+    if (activeCam===4) updateSidebarForCam(4);
+    setTimeout(()=>{
+      CAM_SCENES[4].people=[];
+      if (activeCam===4) updateSidebarForCam(4);
+      scheduleRooftopEvent();
+    }, 10000);
+  }, 25000 + Math.random()*20000);
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────
 function doAction(type) {
-  $('alertOverlay').style.display = 'none';
-  if (type === 'notify') addAINote('Security team alerted via push notification.');
-  if (type === 'watchlist') addAINote('Unknown individual added to watchlist.');
+  $('alertOverlay').style.display='none';
+  if (type==='notify') addAINote('Security team alerted via push notification.');
+  if (type==='watchlist') addAINote('Unknown individual added to watchlist.');
 }
-function addAINote(msg) { $('aiText').textContent = msg; setTimeout(updateAI, 3000); }
-
+function addAINote(msg) { $('aiText').textContent=msg; setTimeout(updateAI,3000); }
 function openModal() {
-  if (alertCount === 0) return;
-  $('mTime').textContent = lastAlertTime || new Date().toTimeString().slice(0,8);
+  if (alertCount===0) return;
+  $('mTime').textContent=lastAlertTime||new Date().toTimeString().slice(0,8);
   $('modalBg').classList.add('open');
 }
 function closeModal() { $('modalBg').classList.remove('open'); }
 function doModalAction(type) {
-  const msgs = { notify:'Security team notified.', watchlist:'Added to watchlist.', dismiss:'Alert dismissed.' };
-  $('mStatus').textContent = msgs[type];
-  setTimeout(closeModal, 1000);
+  const msgs={notify:'Security team notified.',watchlist:'Added to watchlist.',dismiss:'Alert dismissed.'};
+  $('mStatus').textContent=msgs[type]; setTimeout(closeModal,1000);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
