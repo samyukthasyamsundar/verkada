@@ -232,6 +232,21 @@
   .s-end h2 em { font-style: normal; font-weight: 600; }
   .s-end p { font-size: 18px; color: #777; line-height: 1.8; max-width: 500px; }
 
+  /* ARCH DIAGRAM ANIMATIONS */
+  @keyframes flowDash {
+    to { stroke-dashoffset: -24; }
+  }
+  @keyframes flowSolid {
+    0%   { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -60; }
+  }
+  .flow-line { animation: flowSolid 2s linear infinite; }
+  .flow-dashed { animation: flowDash 1.2s linear infinite; }
+  @keyframes nodePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
   /* NAV */
   nav { position: fixed; bottom: 36px; right: 48px; display: flex; align-items: center; gap: 8px; }
   nav button { background: none; border: 1px solid #222; color: #555; width: 36px; height: 36px; font-size: 14px; cursor: pointer; transition: all .1s; }
@@ -241,11 +256,11 @@
 
   /* VERKADA LOGO MARK */
   .vk-mark { position: fixed; top: 0; right: 0; padding: 10px 20px; z-index: 200; pointer-events: none; }
-  .vk-mark img { height: 22px; }
+  .vk-mark img { height: 34px; }
 
   /* TITLE LOGO */
   .title-logo { margin-bottom: 36px; }
-  .title-logo img { height: 40px; }
+  .title-logo img { height: 60px; }
 </style>
 </head>
 <body>
@@ -262,16 +277,22 @@
 </div>
 
 <!-- 2. ABOUT ME — black -->
-<div class="slide s-title">
-  <div class="label">About Me</div>
-  <div class="rule"></div>
-  <h1><em>Samyuktha</em> Syamsundar</h1>
-  <p style="max-width:600px">B.S. Cybersecurity, Purdue University &nbsp;·&nbsp; St. Louis, Missouri</p>
-  <div style="margin-top:48px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;max-width:600px">
-    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Reading</div><div style="font-size:13px;color:#aaa;line-height:1.6">Currently into security research and sci-fi</div></div>
-    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Coffee</div><div style="font-size:13px;color:#aaa;line-height:1.6">Always hunting for the best local roasters</div></div>
-    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Training</div><div style="font-size:13px;color:#aaa;line-height:1.6">Weightlifting and outdoor runs</div></div>
-    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Security</div><div style="font-size:13px;color:#aaa;line-height:1.6">CTFs, cloud security labs, and homelab builds</div></div>
+<div class="slide s-title" style="flex-direction:row; align-items:center; gap:64px; justify-content:flex-start;">
+  <div style="flex:1; min-width:0;">
+    <div class="label">About Me</div>
+    <div class="rule"></div>
+    <h1><em>Samyuktha</em> Syamsundar</h1>
+    <p style="max-width:520px">B.S. Cybersecurity, Purdue University &nbsp;·&nbsp; St. Louis, Missouri</p>
+    <div style="margin-top:40px;display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;max-width:440px">
+      <div style="background:#000;padding:20px 22px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Reading</div><div style="font-size:13px;color:#aaa;line-height:1.5">Mystery and romance</div></div>
+      <div style="background:#000;padding:20px 22px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Coffee</div><div style="font-size:13px;color:#aaa;line-height:1.5">Always hunting the best local roasters</div></div>
+      <div style="background:#000;padding:20px 22px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Training</div><div style="font-size:13px;color:#aaa;line-height:1.5">Weightlifting and outdoor runs</div></div>
+      <div style="background:#000;padding:20px 22px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Security</div><div style="font-size:13px;color:#aaa;line-height:1.5">CTFs, cloud labs, homelab builds</div></div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;flex-shrink:0;">
+    <img src="photo1.jpg" style="width:200px;height:150px;object-fit:cover;border-radius:4px;display:block;" alt=""/>
+    <img src="photo2.jpeg" style="width:200px;height:150px;object-fit:cover;border-radius:4px;display:block;" alt=""/>
   </div>
 </div>
 
@@ -287,32 +308,50 @@
     <div class="cell">
       <div class="n">Functional Requirements</div>
       <h3>What the system must do</h3>
-      <ul style="list-style:none;margin-top:10px">
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Isolate camera systems from corporate LAN — no shared broadcast domain</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Provide a single authenticated, auditable remote access point for IT admins</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Store encrypted footage in private cloud — inaccessible from the public internet</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Enable centralized management of Verkada cameras across both office locations</li>
-        <li style="font-size:13px;color:#777;padding:5px 0">Deploy and tear down the full environment in under two minutes via IaC</li>
+      <ul style="list-style:none;margin-top:14px">
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#22c55e;font-weight:700;font-size:11px;flex-shrink:0">01</span>Keep camera networks completely separate from corporate systems</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#22c55e;font-weight:700;font-size:11px;flex-shrink:0">02</span>One secure, logged entry point for remote IT admin access</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#22c55e;font-weight:700;font-size:11px;flex-shrink:0">03</span>Footage stored encrypted — unreachable from the public internet</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#22c55e;font-weight:700;font-size:11px;flex-shrink:0">04</span>Centralized management across both San Francisco offices</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;display:flex;gap:10px;align-items:baseline"><span style="color:#22c55e;font-weight:700;font-size:11px;flex-shrink:0">05</span>Full environment deployable — and removable — in under 2 minutes</li>
       </ul>
     </div>
     <div class="cell">
       <div class="n">Non-functional Requirements</div>
-      <h3>How the system must perform</h3>
-      <ul style="list-style:none;margin-top:10px">
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Cost efficiency</strong> — pay-as-you-go cloud spend; no dedicated hardware CapEx</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Ease of maintenance</strong> — version-controlled IaC with zero configuration drift</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Network isolation</strong> — enforced by architecture, not configuration alone</li>
-        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Auditability &amp; reporting</strong> — all access logged; compliant with SOC 2, ISO 27001, HIPAA</li>
-        <li style="font-size:13px;color:#777;padding:5px 0"><strong style="color:#555">Multi-client scalability</strong> — architecture must template across future Helix Labs deployments</li>
+      <h3>How well it must perform</h3>
+      <ul style="list-style:none;margin-top:14px">
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#3b82f6;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:72px">Cost</span>~$45/mo cloud vs. $50K+ on-prem hardware</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#3b82f6;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:72px">Maintenance</span>Zero manual upkeep — automated and version-controlled</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#3b82f6;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:72px">Isolation</span>Enforced by architecture — not rules that can be misconfigured</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px;align-items:baseline"><span style="color:#3b82f6;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:72px">Audit</span>Every access auto-logged — SOC 2, ISO 27001, HIPAA ready</li>
+        <li style="font-size:14px;color:#555;padding:9px 0;display:flex;gap:10px;align-items:baseline"><span style="color:#3b82f6;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:72px">Scale</span>One template → any future client or office in &lt;2 min</li>
       </ul>
     </div>
   </div>
 </div>
 
 <!-- 3. THE THREAT — black -->
-<div class="slide s-break">
+<div class="slide s-content">
   <div class="label">01 The Scenario</div>
   <h2>When every device shares the same network, one breach can <em>compromise everything.</em></h2>
+  <div class="split" style="margin-top:32px; gap:48px;">
+    <div>
+      <p class="body" style="margin-bottom:28px;">Most physical security breaches don't start at the camera — they start at the laptop two desks away. A phishing email, a weak password, a compromised device on the same network. And once an attacker is in, the camera feeds, the footage archives, the admin credentials — it's all reachable.</p>
+      <div style="display:flex;flex-direction:column;gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;">
+        <div style="background:#0a0a0a;padding:14px 20px;display:flex;gap:14px;align-items:center"><span style="color:#ef4444;font-size:18px;">→</span><span style="font-size:14px;color:#aaa;">Employee laptop compromised via phishing</span></div>
+        <div style="background:#0a0a0a;padding:14px 20px;display:flex;gap:14px;align-items:center"><span style="color:#ef4444;font-size:18px;">→</span><span style="font-size:14px;color:#aaa;">Attacker moves laterally across shared LAN</span></div>
+        <div style="background:#0a0a0a;padding:14px 20px;display:flex;gap:14px;align-items:center"><span style="color:#ef4444;font-size:18px;">→</span><span style="font-size:14px;color:#aaa;">Camera system, footage, admin access all reachable</span></div>
+        <div style="background:#111;padding:14px 20px;display:flex;gap:14px;align-items:center;border-top:1px solid #ef444433"><span style="color:#ef4444;font-size:18px;font-weight:700">✕</span><span style="font-size:14px;color:#ef4444;font-weight:500;">One entry point. Full access. No containment.</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="border:1px solid #1a1a1a; padding:32px; position:relative;">
+        <div style="position:absolute;top:-1px;left:24px;background:#000;padding:0 10px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ef4444;font-family:monospace;">The industry reality</div>
+        <p style="font-size:22px;font-weight:300;color:#fff;line-height:1.65;margin-bottom:24px;">"68% of breaches involve a non-malicious human element — a shared network being the most common attack surface for physical security systems."</p>
+        <p style="font-size:12px;color:#444;letter-spacing:1px;text-transform:uppercase;">The answer isn't better firewall rules. It's separating the network by design.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 4. SOLUTION CONSIDERATIONS — white -->
@@ -321,40 +360,40 @@
   <h2>Before building anything, we <em>evaluated the tradeoffs.</em></h2>
   <div class="grid g3">
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9.5 9.5h4a2 2 0 0 1 0 4h-3a2 2 0 0 0 0 4H15"/></svg></div>
+      <div class="icon-box" style="background:rgba(59,130,246,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9.5 9.5h4a2 2 0 0 1 0 4h-3a2 2 0 0 0 0 4H15"/></svg></div>
       <div class="n">Cost</div>
       <h3>Cloud vs. on-prem</h3>
       <p>~$45/month vs. $50K+ on-prem CapEx. 60–70% lower TCO over 3 years.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+      <div class="icon-box" style="background:rgba(34,197,94,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
       <div class="n">Ease of Maintenance</div>
       <h3>Zero configuration drift</h3>
       <p>Everything in Terraform. Any engineer can rebuild the full environment in one command.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="icon-box" style="background:rgba(245,158,11,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
       <div class="n">Network Isolation</div>
       <h3>Architecture, not rules</h3>
-      <p>Private subnet has no IGW route — no path exists by design, not by firewall configuration.</p>
+      <p>Private subnet has no internet gateway route — no path exists by design.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+      <div class="icon-box" style="background:rgba(168,85,247,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
       <div class="n">Total Cost of Ownership</div>
       <h3>No on-site IT overhead</h3>
-      <p>Managed AWS absorbs patching, failures, and scaling. Pay for what you use.</p>
+      <p>AWS manages patching, failures, and scaling automatically. Pay only for usage.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
+      <div class="icon-box" style="background:rgba(236,72,153,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
       <div class="n">Reporting &amp; Auditability</div>
       <h3>Compliance-ready from day one</h3>
-      <p>CloudTrail, VPC Flow Logs, S3 access logs built in. SOC 2, ISO 27001, HIPAA covered.</p>
+      <p>Every API call, network event, and file access auto-logged. SOC 2, ISO 27001, HIPAA covered.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+      <div class="icon-box" style="background:rgba(20,184,166,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
       <div class="n">Multi-client Scalability</div>
       <h3>One template, every client</h3>
-      <p>Parameterized Terraform module. Same zero-trust architecture for any client in &lt;2 minutes.</p>
+      <p>Parameterized Terraform module — same zero-trust posture for any new client in &lt;2 minutes.</p>
     </div>
   </div>
 </div>
@@ -365,40 +404,40 @@
   <h2>Six layers of protection. <em>One secure environment.</em></h2>
   <div class="grid g3">
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+      <div class="icon-box" style="background:rgba(59,130,246,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
       <div class="n">01 VPC</div>
-      <h3>Logically isolated network</h3>
-      <p>Helix Labs' own segment of AWS — no other tenant can see in or route to it.</p>
+      <h3>Dedicated isolated network</h3>
+      <p>Helix Labs gets their own private slice of AWS. No other tenant can see in or route to it.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="16" width="20" height="5" rx="1"/></svg></div>
+      <div class="icon-box" style="background:rgba(34,197,94,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="16" width="20" height="5" rx="1"/></svg></div>
       <div class="n">02 Subnet Segmentation</div>
-      <h3>Camera systems off the corporate LAN</h3>
-      <p>Public and private subnets keep admin access separate from camera infrastructure.</p>
+      <h3>Cameras off the corporate LAN</h3>
+      <p>Camera and admin traffic live in separate subnets — a breach in one cannot reach the other.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div class="icon-box" style="background:rgba(245,158,11,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
       <div class="n">03 Bastion Host</div>
-      <h3>Single hardened ingress point</h3>
-      <p>All SSH tunnels through one IP-locked bastion. No direct exposure of private subnet hosts.</p>
+      <h3>One door in. Fully logged.</h3>
+      <p>All admin access tunnels through a single IP-locked entry point. Every session is timestamped.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+      <div class="icon-box" style="background:rgba(168,85,247,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
       <div class="n">04 Security Groups</div>
-      <h3>Deny-all with explicit egress only</h3>
-      <p>Zero inbound from the internet. Egress locked to port 443 HTTPS — nothing else gets out.</p>
+      <h3>Nothing in. Port 443 out only.</h3>
+      <p>Camera servers can call out to storage, but cannot receive any inbound connection from the internet.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+      <div class="icon-box" style="background:rgba(236,72,153,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
       <div class="n">05 S3 + IAM</div>
-      <h3>Least-privilege storage access</h3>
-      <p>IAM role, no static credentials. Policy scoped to three actions on one bucket ARN.</p>
+      <h3>No credentials on disk. Ever.</h3>
+      <p>Temporary role-based access only. CloudTrail + VPC Flow Logs create a complete, searchable audit trail.</p>
     </div>
     <div class="cell">
-      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <div class="icon-box" style="background:rgba(20,184,166,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
       <div class="n">06 Terraform (IaC)</div>
-      <h3>Version-controlled and auditable</h3>
-      <p>Every resource is code. Peer-reviewable, repeatable, deployable in under two minutes.</p>
+      <h3>Scales without increasing headcount</h3>
+      <p>One parameterized template. Add cameras, offices, or clients — infrastructure scales automatically with no manual config.</p>
     </div>
   </div>
 </div>
@@ -487,20 +526,24 @@
       </g>
 
       <!-- ── ARROW 1: Internet → Bastion (SSH via IGW) ── -->
-      <line x1="80" y1="200" x2="193" y2="200" stroke="#22c55e" stroke-width="1.5" marker-end="url(#ag)"/>
-      <text x="137" y="189" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace">SSH :22 · via IGW</text>
+      <line x1="80" y1="200" x2="193" y2="200" stroke="#22c55e" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#ag)" class="flow-dashed" style="animation-duration:1.4s"/>
+      <text x="137" y="189" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace" font-weight="600">SSH :22 · via IGW</text>
+      <text x="137" y="214" text-anchor="middle" font-size="6.5" fill="#4ade80" font-family="monospace" opacity="0.7">Admin session · fully logged</text>
 
       <!-- ── ARROW 2: Bastion → Cam Server arc (SSH proxy, over cameras) ── -->
-      <path d="M221,172 Q405,112 588,172" fill="none" stroke="#22c55e" stroke-width="1.4" stroke-dasharray="4,2" marker-end="url(#ag)"/>
-      <text x="405" y="104" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace">SSH proxy :22 (admin)</text>
+      <path d="M221,172 Q405,112 588,172" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-dasharray="5,2" marker-end="url(#ag)" class="flow-dashed" style="animation-duration:2s"/>
+      <text x="405" y="104" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace" font-weight="600">SSH tunnel · agent forwarding</text>
+      <text x="405" y="115" text-anchor="middle" font-size="6.5" fill="#4ade80" font-family="monospace" opacity="0.7">Never direct — always proxied</text>
 
       <!-- ── ARROW 3: Cameras → Cam Server (RTSP video stream) ── -->
-      <line x1="446" y1="200" x2="560" y2="200" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ac)"/>
-      <text x="503" y="215" text-anchor="middle" font-size="7.5" fill="#22d3ee" font-family="monospace">RTSP stream</text>
+      <line x1="446" y1="200" x2="560" y2="200" stroke="#22d3ee" stroke-width="2" stroke-dasharray="8,3" marker-end="url(#ac)" class="flow-dashed" style="animation-duration:0.8s"/>
+      <text x="503" y="215" text-anchor="middle" font-size="7.5" fill="#22d3ee" font-family="monospace" font-weight="600">RTSP live stream</text>
+      <text x="503" y="225" text-anchor="middle" font-size="6.5" fill="#67e8f9" font-family="monospace" opacity="0.7">Video feed · real-time</text>
 
       <!-- ── ARROW 4: Cam Server → S3 (VPC Gateway Endpoint) ── -->
-      <line x1="616" y1="200" x2="792" y2="200" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
-      <text x="704" y="189" text-anchor="middle" font-size="7.5" fill="#f59e0b" font-family="monospace">VPC EP :443 (write)</text>
+      <line x1="616" y1="200" x2="792" y2="200" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#aa)" class="flow-dashed" style="animation-duration:1.8s"/>
+      <text x="704" y="189" text-anchor="middle" font-size="7.5" fill="#f59e0b" font-family="monospace" font-weight="600">VPC Endpoint · HTTPS :443</text>
+      <text x="704" y="215" text-anchor="middle" font-size="6.5" fill="#fcd34d" font-family="monospace" opacity="0.7">Never leaves AWS backbone · AES-256</text>
 
       <!-- ── VIEWER NODE (cx=975, cy=200) — outside VPC, reads from S3 ── -->
       <g transform="translate(975,200)">
@@ -515,9 +558,9 @@
       </g>
 
       <!-- ── ARROW 5: S3 → Viewer (public HTTPS read via Signed URL) ── -->
-      <line x1="848" y1="200" x2="947" y2="200" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5,3" marker-end="url(#al)"/>
-      <text x="897" y="189" text-anchor="middle" font-size="7.5" fill="#6b7280" font-family="monospace">HTTPS :443</text>
-      <text x="897" y="215" text-anchor="middle" font-size="7" fill="#6b7280" font-family="monospace">Signed URL</text>
+      <line x1="848" y1="200" x2="947" y2="200" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#al)" class="flow-dashed" style="animation-duration:2.2s"/>
+      <text x="897" y="189" text-anchor="middle" font-size="7.5" fill="#6b7280" font-family="monospace" font-weight="600">HTTPS :443 · read-only</text>
+      <text x="897" y="215" text-anchor="middle" font-size="6.5" fill="#6b7280" font-family="monospace" opacity="0.7">Time-limited signed URL</text>
     </svg>
   </div>
 </div>
@@ -526,17 +569,81 @@
 <div class="slide s-content">
   <div class="label">02 The Solution</div>
   <h2>Network segmentation <em>by architecture</em></h2>
-  <div class="split">
-    <ul class="items">
-      <li><span class="idx">01</span>A /16 VPC gives Helix Labs a dedicated address space — fully isolated from every other AWS tenant by default</li>
-      <li><span class="idx">02</span>Public subnet (/24) routes through an Internet Gateway for admin access. Private subnet has no IGW route entry.</li>
-      <li><span class="idx">03</span>The private subnet is unreachable by architecture — no route table entry means no path exists, not just a firewall rule blocking one</li>
-      <li><span class="idx">04</span>All ingress to private hosts is SSH-proxied through the bastion host in the public subnet via agent forwarding</li>
-    </ul>
+  <div class="split" style="gap:48px; align-items:start;">
     <div>
-      <div class="scenario" style="border-color:#1a1a1a; margin-bottom:0;">
-        <div class="scenario-tag" style="background:#000;">Why this matters</div>
-        <p style="font-size:17px; color:#aaa; line-height:1.7;">Firewall rules can be misconfigured. Route tables cannot route to an address that has no entry. The private subnet is unreachable by design, not policy.</p>
+      <!-- IP visualization: /16 VPC -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:10px;font-family:monospace;">VPC Address Space</div>
+        <div style="font-family:monospace;font-size:15px;display:flex;align-items:center;gap:4px;margin-bottom:6px;">
+          <span style="color:#3b82f6;background:rgba(59,130,246,0.12);padding:3px 7px;border-radius:3px;">10.0</span>
+          <span style="color:#444">.</span>
+          <span style="color:#555;background:#111;padding:3px 7px;border-radius:3px;">0.0</span>
+          <span style="color:#333;font-size:12px;margin-left:6px;">/16</span>
+          <span style="color:#555;font-size:11px;margin-left:12px;">→ 65,536 possible device addresses</span>
+        </div>
+        <div style="font-family:monospace;font-size:15px;display:flex;align-items:center;gap:4px;margin-bottom:4px;">
+          <span style="color:#22c55e;background:rgba(34,197,94,0.12);padding:3px 7px;border-radius:3px;">10.0.1</span>
+          <span style="color:#444">.</span>
+          <span style="color:#555;background:#111;padding:3px 7px;border-radius:3px;">0</span>
+          <span style="color:#333;font-size:12px;margin-left:6px;">/24</span>
+          <span style="color:#555;font-size:11px;margin-left:12px;">Public subnet — bastion lives here</span>
+        </div>
+        <div style="font-family:monospace;font-size:15px;display:flex;align-items:center;gap:4px;">
+          <span style="color:#ef4444;background:rgba(239,68,68,0.12);padding:3px 7px;border-radius:3px;">10.0.2</span>
+          <span style="color:#444">.</span>
+          <span style="color:#555;background:#111;padding:3px 7px;border-radius:3px;">0</span>
+          <span style="color:#333;font-size:12px;margin-left:6px;">/24</span>
+          <span style="color:#555;font-size:11px;margin-left:12px;">Private subnet — cameras &amp; server</span>
+        </div>
+      </div>
+      <!-- Firewall rule visual -->
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:10px;font-family:monospace;">Route Table — Private Subnet</div>
+      <div style="font-family:monospace;font-size:12px;border:1px solid #1a1a1a;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 80px;background:#0a0a0a;border-bottom:1px solid #1a1a1a;">
+          <div style="padding:8px 12px;color:#444;font-size:10px;letter-spacing:1px;">DESTINATION</div>
+          <div style="padding:8px 12px;color:#444;font-size:10px;letter-spacing:1px;">TARGET</div>
+          <div style="padding:8px 12px;color:#444;font-size:10px;letter-spacing:1px;">STATUS</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 80px;border-bottom:1px solid #111;">
+          <div style="padding:8px 12px;color:#aaa;">10.0.0.0/16</div>
+          <div style="padding:8px 12px;color:#aaa;">local</div>
+          <div style="padding:8px 12px;color:#22c55e;font-size:10px;">ACTIVE</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 80px;background:#0d0d0d;">
+          <div style="padding:8px 12px;color:#555;text-decoration:line-through;">0.0.0.0/0</div>
+          <div style="padding:8px 12px;color:#555;text-decoration:line-through;">igw-xxxxx</div>
+          <div style="padding:8px 12px;color:#ef4444;font-size:10px;">NO ENTRY</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#444;margin-top:8px;font-family:monospace;">No internet gateway entry = no path to the internet. Not blocked — nonexistent.</p>
+    </div>
+    <div>
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:10px;font-family:monospace;">Security Group — Camera Server</div>
+      <div style="font-family:monospace;font-size:12px;border:1px solid #1a1a1a;overflow:hidden;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr;background:#0a0a0a;border-bottom:1px solid #1a1a1a;">
+          <div style="padding:8px 12px;color:#444;font-size:10px;">DIR</div>
+          <div style="padding:8px 12px;color:#444;font-size:10px;">PORT / PROTOCOL</div>
+          <div style="padding:8px 12px;color:#444;font-size:10px;">SOURCE / DEST</div>
+        </div>
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr;border-bottom:1px solid #111;">
+          <div style="padding:8px 12px;color:#22c55e;font-size:10px;">IN</div>
+          <div style="padding:8px 12px;color:#aaa;">22 / TCP</div>
+          <div style="padding:8px 12px;color:#aaa;">sg-bastion only</div>
+        </div>
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr;border-bottom:1px solid #111;background:#0d0d0d;">
+          <div style="padding:8px 12px;color:#ef4444;font-size:10px;">IN</div>
+          <div style="padding:8px 12px;color:#333;text-decoration:line-through;">ANY</div>
+          <div style="padding:8px 12px;color:#333;text-decoration:line-through;">0.0.0.0/0</div>
+        </div>
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr;">
+          <div style="padding:8px 12px;color:#f59e0b;font-size:10px;">OUT</div>
+          <div style="padding:8px 12px;color:#aaa;">443 / HTTPS</div>
+          <div style="padding:8px 12px;color:#aaa;">S3 VPC Endpoint</div>
+        </div>
+      </div>
+      <div style="border:1px solid #1a1a1a;padding:20px 24px;position:relative;">
+        <div style="position:absolute;top:-1px;left:20px;background:#000;padding:0 10px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ef4444;font-family:monospace;">Why this matters</div>
+        <p style="font-size:15px;color:#aaa;line-height:1.7;">An IT admin accidentally leaves a port open on a misconfigured firewall. It happens. But you cannot accidentally add a missing route table entry. The private subnet has no path to the internet — not because of a rule that could be changed, but because the route simply does not exist.</p>
       </div>
     </div>
   </div>
@@ -561,8 +668,8 @@
     </ul>
     <div>
       <div class="scenario" style="border-color:#1a1a1a; margin-bottom:0;">
-        <div class="scenario-tag" style="background:#000;">Think of it this way</div>
-        <p style="font-size:17px; color:#aaa; line-height:1.7;">The camera server can make a phone call, but it cannot receive one. Even if someone knew exactly where it was, they could not knock on the door.</p>
+        <div class="scenario-tag" style="background:#000;">Why it matters</div>
+        <p style="font-size:17px; color:#aaa; line-height:1.7;">Most ransomware and lateral movement attacks rely on initiating a connection into a system. If no inbound connection is possible — not blocked, but architecturally absent — that entire attack surface disappears. The camera server calls out to storage. Nothing can call in.</p>
       </div>
     </div>
   </div>
@@ -588,8 +695,8 @@
     </div>
     <div>
       <div class="scenario" style="border-color:#e8e8e5; margin-bottom:0;">
-        <div class="scenario-tag" style="background:#fafaf9; color:#ef4444;">Think of it this way</div>
-        <p style="font-size:16px; color:#555; line-height:1.7;">A key that opens one door and lets the server do exactly three things once inside — even if copied, it's useless everywhere else.</p>
+        <div class="scenario-tag" style="background:#fafaf9; color:#ef4444;">Why it matters</div>
+        <p style="font-size:16px; color:#555; line-height:1.7;">Credential theft is one of the most common cloud attack vectors. With static access keys on disk, a stolen credential gives an attacker open-ended access. Here, credentials auto-expire, can't be exported, and only work for three specific operations on one specific bucket — limiting blast radius to near zero even in a worst-case breach.</p>
       </div>
     </div>
   </div>
@@ -612,24 +719,24 @@
   <h2>What Helix Labs <em>sees in real time</em></h2>
   <div class="kpi-grid">
     <div class="kpi-cell">
-      <div class="kpi-label">Live Occupancy</div>
-      <div class="kpi-val">0</div>
-      <div class="kpi-sub">Unknown individuals<br>in frame right now</div>
+      <div class="kpi-label">Detection Speed</div>
+      <div class="kpi-val" style="font-size:52px;">&lt;2s</div>
+      <div class="kpi-sub">From person entering frame<br>to alert firing on-screen</div>
     </div>
     <div class="kpi-cell">
-      <div class="kpi-label">Employee Recognition</div>
-      <div class="kpi-val">0</div>
-      <div class="kpi-sub">Unmatched faces<br>in the last hour</div>
+      <div class="kpi-label">AI Confidence Threshold</div>
+      <div class="kpi-val">94%</div>
+      <div class="kpi-sub">Minimum match score<br>before flagging unknown</div>
     </div>
     <div class="kpi-cell">
-      <div class="kpi-label">Dwell Time Alerts</div>
-      <div class="kpi-val">—</div>
-      <div class="kpi-sub">No one flagged<br>for unusual duration</div>
+      <div class="kpi-label">Cameras Monitored</div>
+      <div class="kpi-val">7</div>
+      <div class="kpi-sub">Zones: lobby, labs, server room,<br>parking, loading, exec, visitor</div>
     </div>
     <div class="kpi-cell">
-      <div class="kpi-label">Security Actions</div>
-      <div class="kpi-val">0</div>
-      <div class="kpi-sub">Open incidents<br>requiring response</div>
+      <div class="kpi-label">Incident Response</div>
+      <div class="kpi-val" style="font-size:42px;">Auto</div>
+      <div class="kpi-sub">Critical breach triggers<br>segment isolation immediately</div>
     </div>
   </div>
 </div>
@@ -670,34 +777,33 @@
         <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>NFR</strong> — Multi-client: same Terraform module deploys for any client in &lt;2 min</span></li>
         <li style="font-size:13px;color:#333;padding:6px 0;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>NFR</strong> — Compliance-ready: CloudTrail + VPC Flow Logs cover SOC 2 &amp; ISO 27001</span></li>
       </ul>
-      <div class="stats" style="justify-content:flex-start;gap:16px;padding-top:4px">
-        <div class="stat"><div class="num" style="color:#111;font-size:26px">19</div><div class="lbl">Cloud resources</div></div>
-        <div class="stat"><div class="num" style="color:#111;font-size:26px">0</div><div class="lbl">Exposed entry points</div></div>
-        <div class="stat"><div class="num" style="color:#111;font-size:26px">&lt;2m</div><div class="lbl">Deploy time</div></div>
-        <div class="stat"><div class="num" style="color:#16a34a;font-size:26px">6/6</div><div class="lbl">Requirements met</div></div>
-      </div>
     </div>
   </div>
 </div>
 
 <!-- 16. CLOSING VISUAL — black -->
 <div class="slide s-break center">
-  <div class="label" style="margin-bottom:48px;">Helix Labs · Zero-Trust Infrastructure</div>
-  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#222; border:1px solid #222; max-width:720px; width:100%; margin:0 auto 48px;">
-    <div style="background:#111; padding:48px 32px; text-align:center;">
-      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#fff; line-height:1;">19</div>
-      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Cloud Resources</div>
+  <div class="label" style="margin-bottom:36px;">Helix Labs · Zero-Trust Camera Infrastructure</div>
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#1a1a1a; border:1px solid #1a1a1a; max-width:860px; width:100%; margin:0 auto 40px;">
+    <div style="background:#0a0a0a; padding:36px 24px; text-align:center;">
+      <div style="font-size:52px; font-weight:200; letter-spacing:-3px; color:#fff; line-height:1;">19</div>
+      <div style="font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:12px; font-family:monospace;">Cloud resources<br>provisioned</div>
     </div>
-    <div style="background:#111; padding:48px 32px; text-align:center;">
-      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#ef4444; line-height:1;">0</div>
-      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Exposed Entry Points</div>
+    <div style="background:#0a0a0a; padding:36px 24px; text-align:center;">
+      <div style="font-size:52px; font-weight:200; letter-spacing:-3px; color:#ef4444; line-height:1;">0</div>
+      <div style="font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:12px; font-family:monospace;">Exposed entry<br>points to internet</div>
     </div>
-    <div style="background:#111; padding:48px 32px; text-align:center;">
-      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#16a34a; line-height:1;">6/6</div>
-      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Requirements Met</div>
+    <div style="background:#0a0a0a; padding:36px 24px; text-align:center;">
+      <div style="font-size:52px; font-weight:200; letter-spacing:-3px; color:#22c55e; line-height:1;">&lt;2m</div>
+      <div style="font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:12px; font-family:monospace;">Full environment<br>deploy or teardown</div>
+    </div>
+    <div style="background:#0a0a0a; padding:36px 24px; text-align:center;">
+      <div style="font-size:52px; font-weight:200; letter-spacing:-3px; color:#3b82f6; line-height:1;">∞</div>
+      <div style="font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:12px; font-family:monospace;">Clients deployable<br>from one template</div>
     </div>
   </div>
-  <p style="font-size:14px; color:#444; letter-spacing:1px; text-transform:uppercase;">Zero trust. Least privilege. Infrastructure as code.</p>
+  <p style="font-size:15px; font-weight:300; color:#777; max-width:580px; line-height:1.7; margin-bottom:20px;">Built for Helix Labs. Designed to template for every client that follows.</p>
+  <p style="font-size:11px; color:#333; letter-spacing:2px; text-transform:uppercase; font-family:monospace;">Zero trust · Least privilege · Infrastructure as code</p>
 </div>
 
 <div class="pg-fixed" id="pgFixed">01</div>
