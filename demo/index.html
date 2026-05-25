@@ -195,6 +195,50 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
 .mb-m { background:rgba(255,255,255,.04); border-color:#333; color:var(--muted); }
 .mb-m:hover { color:#fff; border-color:#555; }
 
+/* INFRASTRUCTURE */
+.infra-panel { display:none; overflow-y:auto; padding:28px 36px; background:var(--bg); }
+.infra-panel::-webkit-scrollbar { display:none; }
+.infra-panel.active { display:block; }
+.infra-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+.infra-title { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+.aws-region-pill { font-size:9px; padding:3px 10px; border-radius:2px; background:rgba(245,158,11,.12); color:var(--amber); border:1px solid rgba(245,158,11,.25); letter-spacing:1px; font-weight:600; }
+.tf-pill { font-size:9px; padding:3px 10px; border-radius:2px; background:rgba(124,58,237,.15); color:#a78bfa; border:1px solid rgba(124,58,237,.3); letter-spacing:1px; font-weight:600; }
+.aws-cloud { border:1px dashed rgba(245,158,11,.35); border-radius:6px; padding:20px; margin-bottom:20px; position:relative; }
+.aws-cloud-label { position:absolute; top:-10px; left:16px; background:var(--bg); padding:0 8px; font-size:9px; letter-spacing:1.5px; color:var(--amber); font-weight:600; }
+.aws-vpc { border:1px solid rgba(59,130,246,.3); border-radius:4px; padding:16px; background:rgba(59,130,246,.03); position:relative; }
+.aws-vpc-label { position:absolute; top:-9px; left:12px; background:var(--bg); padding:0 6px; font-size:9px; letter-spacing:1.2px; color:var(--blue); }
+.subnet-row { display:grid; grid-template-columns:1fr 40px 1fr 40px 120px; align-items:center; gap:0; margin-top:8px; }
+.aws-subnet { border:1px solid; border-radius:3px; padding:14px; position:relative; }
+.aws-subnet.pub  { border-color:rgba(34,197,94,.3); background:rgba(34,197,94,.03); }
+.aws-subnet.priv { border-color:rgba(168,85,247,.3); background:rgba(168,85,247,.03); }
+.subnet-label { font-size:8px; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:10px; }
+.pub  .subnet-label { color:var(--green); }
+.priv .subnet-label { color:#a78bfa; }
+.svc-card { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:3px; background:rgba(255,255,255,.03); border:1px solid var(--border); margin-bottom:6px; }
+.svc-card:last-child { margin-bottom:0; }
+.svc-icon { font-size:14px; flex-shrink:0; }
+.svc-name { font-size:11px; font-weight:500; color:var(--bright); }
+.svc-sub  { font-size:9px; color:var(--muted); margin-top:1px; font-family:'SF Mono',monospace; }
+.arrow-col { display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:16px; }
+.igw-card { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.igw-box { background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.3); border-radius:3px; padding:10px 14px; text-align:center; }
+.igw-label { font-size:9px; letter-spacing:1px; color:var(--blue); font-weight:600; }
+.igw-sub { font-size:8px; color:var(--muted); margin-top:2px; }
+.aws-services-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px; }
+.aws-svc-box { background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:14px; }
+.aws-svc-box-title { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; font-weight:600; }
+.aws-svc-detail { font-size:10px; color:var(--muted); line-height:1.7; }
+.aws-svc-detail li { list-style:none; padding-left:0; }
+.aws-svc-detail li::before { content:'→ '; color:inherit; opacity:.5; }
+.sg-rules { margin-top:20px; }
+.sg-title { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.sg-table { width:100%; border-collapse:collapse; font-size:11px; }
+.sg-table th { padding:8px 12px; text-align:left; font-size:9px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); background:var(--panel); border-bottom:1px solid var(--border); }
+.sg-table td { padding:9px 12px; border-bottom:1px solid #111315; font-family:'SF Mono',monospace; font-size:10px; color:var(--text); }
+.sg-table tr:hover td { background:rgba(255,255,255,.015); }
+.sg-allow { color:var(--green); font-weight:600; }
+.sg-deny  { color:var(--red);   font-weight:600; }
+
 /* LOADING */
 .loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; gap:16px; }
 .loading-logo { font-size:16px; font-weight:800; letter-spacing:3px; display:flex; align-items:center; gap:10px; }
@@ -224,6 +268,7 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
     <div class="htab on" onclick="switchTab('live',this)">Live View</div>
     <div class="htab" onclick="switchTab('analytics',this)">Analytics</div>
     <div class="htab" onclick="switchTab('access',this)">Access Log</div>
+    <div class="htab" onclick="switchTab('infra',this)">Infrastructure</div>
   </div>
   <div class="hdr-right">
     <div class="live-pill"><div class="ldot"></div>LIVE</div>
@@ -326,6 +371,120 @@ footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid
   </div>
 </div>
 
+<!-- INFRASTRUCTURE -->
+<div class="infra-panel" id="tabInfra">
+  <div class="infra-topbar">
+    <div class="infra-title">AWS Infrastructure — Zero-Trust Architecture</div>
+    <div style="display:flex;gap:8px;">
+      <span class="aws-region-pill">☁ AWS us-east-1</span>
+      <span class="tf-pill">⚡ Terraform IaC</span>
+    </div>
+  </div>
+
+  <div class="aws-cloud">
+    <div class="aws-cloud-label">AWS CLOUD</div>
+    <div class="aws-vpc">
+      <div class="aws-vpc-label">VPC — 10.0.0.0/16</div>
+      <div class="subnet-row">
+
+        <!-- Public Subnet -->
+        <div class="aws-subnet pub">
+          <div class="subnet-label">Public Subnet · 10.0.1.0/24</div>
+          <div class="svc-card">
+            <span class="svc-icon">🔒</span>
+            <div><div class="svc-name">Bastion Host</div><div class="svc-sub">EC2 t3.micro · SSH jump server</div></div>
+          </div>
+          <div class="svc-card">
+            <span class="svc-icon">🔀</span>
+            <div><div class="svc-name">NAT Gateway</div><div class="svc-sub">Elastic IP · outbound only</div></div>
+          </div>
+        </div>
+
+        <div class="arrow-col">→</div>
+
+        <!-- Private Subnet -->
+        <div class="aws-subnet priv">
+          <div class="subnet-label">Private Subnet · 10.0.2.0/24</div>
+          <div class="svc-card">
+            <span class="svc-icon">⚙</span>
+            <div><div class="svc-name">app-server-01</div><div class="svc-sub">EC2 t3.medium · no public IP</div></div>
+          </div>
+          <div class="svc-card">
+            <span class="svc-icon">⚙</span>
+            <div><div class="svc-name">app-server-02</div><div class="svc-sub">EC2 t3.medium · no public IP</div></div>
+          </div>
+        </div>
+
+        <div class="arrow-col" style="color:rgba(59,130,246,.6);">↔</div>
+
+        <!-- Internet Gateway -->
+        <div class="igw-card">
+          <div class="igw-box">
+            <div class="igw-label">INTERNET GATEWAY</div>
+            <div class="igw-sub">igw-0a4f2e… · attached to VPC</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px;">↕ Internet</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="aws-services-row">
+      <div class="aws-svc-box">
+        <div class="aws-svc-box-title" style="color:var(--green)">🗄 S3 Bucket</div>
+        <ul class="aws-svc-detail">
+          <li>AES-256 encryption at rest</li>
+          <li>Versioning enabled</li>
+          <li>Public access blocked</li>
+          <li>Lifecycle policies set</li>
+        </ul>
+      </div>
+      <div class="aws-svc-box">
+        <div class="aws-svc-box-title" style="color:var(--red)">🔑 IAM</div>
+        <ul class="aws-svc-detail">
+          <li>Least-privilege roles</li>
+          <li>MFA enforced on all users</li>
+          <li>No root key usage</li>
+          <li>Role-based EC2 access</li>
+        </ul>
+      </div>
+      <div class="aws-svc-box">
+        <div class="aws-svc-box-title" style="color:var(--amber)">🛡 Security Groups</div>
+        <ul class="aws-svc-detail">
+          <li>Bastion: port 22 whitelisted IP</li>
+          <li>App servers: deny all inbound</li>
+          <li>Egress controlled via NAT</li>
+          <li>Zero direct internet exposure</li>
+        </ul>
+      </div>
+      <div class="aws-svc-box">
+        <div class="aws-svc-box-title" style="color:var(--blue)">📊 CloudWatch</div>
+        <ul class="aws-svc-detail">
+          <li>CPU/memory alerts configured</li>
+          <li>SSH login notifications</li>
+          <li>VPC flow logs enabled</li>
+          <li>Anomaly detection active</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sg-rules">
+    <div class="sg-title">Security Group Rules — Inbound</div>
+    <table class="sg-table">
+      <thead><tr><th>Resource</th><th>Port</th><th>Protocol</th><th>Source</th><th>Action</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Bastion Host</td><td>22</td><td>TCP</td><td>203.0.113.0/32</td><td class="sg-allow">ALLOW</td><td style="color:var(--muted)">Admin IP only</td></tr>
+        <tr><td>Bastion Host</td><td>0–65535</td><td>ALL</td><td>0.0.0.0/0</td><td class="sg-deny">DENY</td><td style="color:var(--muted)">Implicit deny</td></tr>
+        <tr><td>App Server SG</td><td>8080</td><td>TCP</td><td>sg-bastion</td><td class="sg-allow">ALLOW</td><td style="color:var(--muted)">From bastion only</td></tr>
+        <tr><td>App Server SG</td><td>22</td><td>TCP</td><td>sg-bastion</td><td class="sg-allow">ALLOW</td><td style="color:var(--muted)">SSH via bastion</td></tr>
+        <tr><td>App Server SG</td><td>0–65535</td><td>ALL</td><td>0.0.0.0/0</td><td class="sg-deny">DENY</td><td style="color:var(--muted)">No public inbound</td></tr>
+        <tr><td>S3 Bucket</td><td>443</td><td>HTTPS</td><td>VPC Endpoint</td><td class="sg-allow">ALLOW</td><td style="color:var(--muted)">Private access only</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="bstat"><div class="bstat-n" id="bEntries">0</div><div class="bstat-l">Entries Today</div></div>
@@ -366,33 +525,32 @@ const CAMERAS = [
 ];
 
 const CAM_SCENES = [
-  { people: [
-    { name:'Sarah K.',        id:'EMP-0421', dept:'Engineering', role:'emp', col:'#22c55e', nx:0.28, ny:0.72, vx:0.0012, vy:0,      sz:0.052 },
-    { name:'James M.',        id:'EMP-0198', dept:'Sales',       role:'emp', col:'#22c55e', nx:0.52, ny:0.68, vx:0.0008, vy:0.0003, sz:0.050 },
-    { name:'Guest · Amir S.', id:'VIS-0026', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.74, ny:0.75, vx:-0.001, vy:0,      sz:0.048 },
+  { people: [ // MAIN ENTRANCE — James + visitor arriving
+    { name:'James M.',        id:'EMP-0198', dept:'Sales',       role:'emp', col:'#22c55e', nx:0.35, ny:0.72, vx:0.0010, vy:0,      sz:0.052 },
+    { name:'Guest · Amir S.', id:'VIS-0026', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.65, ny:0.75, vx:-0.001, vy:0,      sz:0.048 },
   ]},
-  { people: [
+  { people: [ // LOBBY — Aisha at HR desk, two guests waiting
     { name:'Aisha N.',        id:'EMP-0089', dept:'HR',          role:'emp', col:'#22c55e', nx:0.78, ny:0.63, vx:0,       vy:0,      sz:0.052, seated:true },
     { name:'Guest · Raj P.',  id:'VIS-0023', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.26, ny:0.68, vx:0.0012,  vy:0.0005, sz:0.048 },
     { name:'Guest · Chen L.', id:'VIS-0024', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.47, ny:0.72, vx:-0.001,  vy:0.0004, sz:0.046 },
   ]},
-  { people: [
+  { people: [ // SERVER ROOM — Daniel only (restricted, authorized IT)
     { name:'Daniel T.',       id:'EMP-0512', dept:'IT Security', role:'emp', col:'#22c55e', nx:0.52, ny:0.70, vx:0.0005,  vy:0,      sz:0.055 },
   ]},
-  { people: [
+  { people: [ // PARKING — Marcus + Ryan heading to their cars
     { name:'Marcus L.',       id:'EMP-0274', dept:'Finance',     role:'emp', col:'#22c55e', nx:0.18, ny:0.78, vx:0.0018,  vy:0,      sz:0.046 },
-    { name:'James M.',        id:'EMP-0198', dept:'Sales',       role:'emp', col:'#22c55e', nx:0.74, ny:0.74, vx:-0.0014, vy:0,      sz:0.046 },
+    { name:'Ryan C.',         id:'EMP-0289', dept:'DevOps',      role:'emp', col:'#22c55e', nx:0.72, ny:0.75, vx:-0.0014, vy:0,      sz:0.046 },
   ]},
-  { people: [] },
-  { people: [
+  { people: [] }, // ROOFTOP — restricted, no authorized personnel
+  { people: [ // CORRIDOR — Priya + Sarah heading to meeting
     { name:'Priya R.',        id:'EMP-0337', dept:'Product',     role:'emp', col:'#22c55e', nx:0.32, ny:0.73, vx:0.0016,  vy:0,      sz:0.050 },
     { name:'Sarah K.',        id:'EMP-0421', dept:'Engineering', role:'emp', col:'#22c55e', nx:0.67, ny:0.70, vx:-0.0013, vy:0,      sz:0.050 },
   ]},
-  { people: [
-    { name:'Aisha N.',        id:'EMP-0089', dept:'HR',          role:'emp', col:'#22c55e', nx:0.54, ny:0.65, vx:0,       vy:0,      sz:0.053, seated:true },
+  { people: [ // RECEPTION — Nina at front desk, Kim waiting
+    { name:'Nina P.',         id:'EMP-0614', dept:'Operations',  role:'emp', col:'#22c55e', nx:0.54, ny:0.65, vx:0,       vy:0,      sz:0.053, seated:true },
     { name:'Guest · Kim J.',  id:'VIS-0025', dept:'Visitor',     role:'vis', col:'#f59e0b', nx:0.22, ny:0.74, vx:0.0005,  vy:0,      sz:0.048 },
   ]},
-  { people: [] },
+  { people: [] }, // EMERGENCY EXIT — alarm zone, always empty
 ];
 
 // Access log data
@@ -481,9 +639,11 @@ function switchTab(tab, el) {
   $('tabLive').style.display='none';
   $('tabAnalytics').classList.remove('active');
   $('tabAccess').classList.remove('active');
-  if (tab==='live')      { $('tabLive').style.display='grid'; }
+  $('tabInfra').classList.remove('active');
+  if      (tab==='live')      { $('tabLive').style.display='grid'; }
   else if (tab==='analytics') { $('tabAnalytics').classList.add('active'); renderAnalytics(); }
   else if (tab==='access')    { $('tabAccess').classList.add('active'); renderAccessLog(); }
+  else if (tab==='infra')     { $('tabInfra').classList.add('active'); }
 }
 
 // ── ANALYTICS ─────────────────────────────────────────────────────
