@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verkada AI — Live Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js/dist/face-api.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#09090b; --panel:#0f0f11; --border:#1c1c20;
+  --muted:#52525b; --text:#a1a1aa; --bright:#fafafa;
+  --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --blue:#3b82f6;
+}
+body { background:var(--bg); color:var(--bright); font-family:-apple-system,'Inter',sans-serif; height:100vh; display:grid; grid-template-rows:44px 1fr 72px; overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; }
+
+/* TOP BAR */
+header { display:flex; align-items:center; justify-content:space-between; padding:0 20px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.logo { font-size:12px; font-weight:700; letter-spacing:2px; }
+.hdr-center { display:flex; gap:2px; }
+.htab { padding:0 16px; height:44px; display:flex; align-items:center; font-size:11px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; letter-spacing:.3px; transition:all .15s; }
+.htab.on { color:var(--bright); border-color:var(--bright); }
+.hdr-right { display:flex; align-items:center; gap:18px; font-size:11px; color:var(--muted); }
+.live-pill { display:flex; align-items:center; gap:6px; }
+.ldot { width:6px; height:6px; border-radius:50%; background:var(--red); animation:blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.clock { font-variant-numeric:tabular-nums; color:var(--bright); }
+
+/* MAIN BODY */
+.body { display:grid; grid-template-columns:1fr 280px; overflow:hidden; }
+
+/* LEFT — camera area */
+.cam-area { display:flex; flex-direction:column; overflow:hidden; }
+
+/* MAIN FEED */
+.main-feed { position:relative; flex:1; background:#000; overflow:hidden; min-height:0; }
+.main-feed video, .main-feed canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.main-feed canvas { pointer-events:none; }
+.feed-label { position:absolute; top:12px; left:14px; font-size:9px; letter-spacing:2px; color:rgba(255,255,255,.4); font-family:'SF Mono',monospace; pointer-events:none; z-index:10; }
+.feed-ts { position:absolute; bottom:10px; left:14px; font-size:9px; color:rgba(255,255,255,.3); font-family:'SF Mono',monospace; pointer-events:none; z-index:10; }
+.rec-badge { position:absolute; top:12px; right:14px; display:flex; align-items:center; gap:5px; font-size:9px; letter-spacing:1.5px; color:rgba(239,68,68,.8); pointer-events:none; z-index:10; }
+.rdot { width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.2s infinite; }
+.alert-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(239,68,68,.15)); border-bottom:2px solid var(--red); padding:10px 14px; display:none; z-index:20; animation:slideUp .3s ease; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.alert-overlay .at { font-size:10px; letter-spacing:2px; color:var(--red); font-weight:600; }
+.alert-overlay .ab { font-size:12px; color:#fff; margin-top:3px; }
+.alert-overlay .act { display:flex; gap:8px; margin-top:8px; }
+.act-btn { padding:5px 12px; border-radius:3px; font-size:10px; font-weight:500; cursor:pointer; border:1px solid; letter-spacing:.5px; font-family:inherit; transition:all .15s; }
+.btn-r { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.5); color:var(--red); }
+.btn-r:hover { background:rgba(239,68,68,.3); }
+.btn-a { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.4); color:var(--amber); }
+.btn-a:hover { background:rgba(245,158,11,.25); }
+.btn-d { background:rgba(255,255,255,.05); border-color:#333; color:var(--muted); }
+.btn-d:hover { color:#fff; border-color:#555; }
+
+/* THUMBNAIL STRIP */
+.thumb-strip { height:110px; flex-shrink:0; display:flex; gap:1px; background:var(--border); border-top:1px solid var(--border); overflow-x:auto; }
+.thumb-strip::-webkit-scrollbar { display:none; }
+.thumb { flex:0 0 160px; background:var(--panel); position:relative; cursor:pointer; overflow:hidden; transition:all .15s; }
+.thumb:hover { opacity:.85; }
+.thumb.active { outline:2px solid var(--bright); outline-offset:-2px; }
+.thumb-label { position:absolute; bottom:6px; left:8px; font-size:8px; letter-spacing:1.5px; color:rgba(255,255,255,.5); font-family:'SF Mono',monospace; pointer-events:none; z-index:5; }
+.thumb-count { position:absolute; top:6px; right:8px; font-size:9px; color:rgba(255,255,255,.5); pointer-events:none; z-index:5; }
+.thumb-alert { position:absolute; top:0; left:0; right:0; height:2px; background:var(--red); display:none; }
+.thumb canvas, .thumb video { width:100%; height:100%; object-fit:cover; }
+.thumb-live { position:absolute; top:6px; left:8px; width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+
+/* SIDEBAR */
+.sidebar { border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+
+/* KPI GRID */
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); flex-shrink:0; }
+.kpi { background:var(--panel); padding:16px; }
+.kpi-l { font-size:9px; letter-spacing:1.8px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.kpi-v { font-size:32px; font-weight:200; letter-spacing:-1px; line-height:1; }
+.kpi-v.g { color:var(--green); } .kpi-v.r { color:var(--red); } .kpi-v.b { color:var(--blue); }
+.kpi-s { font-size:9px; color:var(--muted); margin-top:4px; }
+.kpi.clickable { cursor:pointer; }
+.kpi.clickable:hover { background:#141416; }
+
+/* WHO LIST */
+.sec-head { padding:12px 16px 8px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); flex-shrink:0; }
+.who-list { flex:1; overflow-y:auto; }
+.who-list::-webkit-scrollbar { display:none; }
+.who-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .1s; }
+.who-row:hover { background:#111113; }
+.who-row.unk { background:rgba(239,68,68,.04); }
+.pip { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.who-info { flex:1; min-width:0; }
+.who-name { font-size:12px; font-weight:500; }
+.who-dept { font-size:10px; color:var(--muted); margin-top:1px; }
+.who-badge { font-size:8px; padding:2px 6px; border-radius:2px; flex-shrink:0; font-weight:500; letter-spacing:.3px; }
+.b-emp { background:rgba(34,197,94,.12); color:var(--green); }
+.b-vis { background:rgba(245,158,11,.12); color:var(--amber); }
+.b-unk { background:rgba(239,68,68,.12); color:var(--red); }
+.who-dwell { font-size:9px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+/* AI SUMMARY */
+.ai-box { border-top:1px solid var(--border); padding:14px; flex-shrink:0; }
+.ai-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.ai-dot { width:5px; height:5px; border-radius:50%; background:var(--blue); animation:blink 2s infinite; }
+.ai-text { font-size:11px; color:var(--text); line-height:1.7; }
+
+/* BOTTOM BAR */
+footer { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--border); }
+.bstat { display:flex; flex-direction:column; justify-content:center; padding:0 24px; border-right:1px solid var(--border); }
+.bstat:last-child { border:none; }
+.bstat-n { font-size:24px; font-weight:200; letter-spacing:-.5px; }
+.bstat-l { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+
+/* MODAL */
+.modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:100; backdrop-filter:blur(6px); }
+.modal-bg.open { display:flex; }
+.modal { background:#111113; border:1px solid #2a2a2e; border-radius:6px; width:420px; animation:pop .2s ease; }
+@keyframes pop { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+.modal-hdr { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); }
+.modal-title { font-size:11px; font-weight:600; letter-spacing:1px; color:var(--red); }
+.modal-x { background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; }
+.modal-x:hover { color:#fff; }
+.modal-body { padding:20px; }
+.modal-row { margin-bottom:14px; }
+.modal-row-l { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.modal-row-v { font-size:14px; color:var(--bright); font-weight:500; }
+.modal-row-v.red { color:var(--red); }
+.modal-acts { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:0 20px 20px; }
+.modal-btn { padding:9px; border-radius:4px; font-size:10px; font-weight:500; letter-spacing:.5px; cursor:pointer; border:1px solid; font-family:inherit; transition:all .15s; }
+.mb-r { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.4); color:var(--red); }
+.mb-r:hover { background:rgba(239,68,68,.2); }
+.mb-a { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.4); color:var(--amber); }
+.mb-a:hover { background:rgba(245,158,11,.2); }
+.mb-m { background:rgba(255,255,255,.04); border-color:#333; color:var(--muted); }
+.mb-m:hover { color:#fff; border-color:#555; }
+
+/* LOADING */
+.loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; gap:16px; }
+.loading-logo { font-size:14px; font-weight:700; letter-spacing:3px; }
+.loading-bar { width:240px; height:1px; background:#1a1a1a; position:relative; overflow:hidden; }
+.loading-bar::after { content:''; position:absolute; left:-100%; width:100%; height:100%; background:var(--bright); animation:load 2s ease-in-out infinite; }
+@keyframes load { 0%{left:-100%} 100%{left:100%} }
+.loading-status { font-size:11px; color:var(--muted); letter-spacing:1px; }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading" id="loading">
+  <div class="loading-logo">VERKADA AI</div>
+  <div class="loading-bar"></div>
+  <div class="loading-status" id="loadStatus">Loading face detection models...</div>
+</div>
+
+<!-- TOP BAR -->
+<header>
+  <div class="logo">VERKADA</div>
+  <div class="hdr-center">
+    <div class="htab on">Live View</div>
+    <div class="htab">Analytics</div>
+    <div class="htab">Access Log</div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-pill"><div class="ldot"></div>LIVE</div>
+    <div class="clock" id="clk">--:--:--</div>
+    <div>1080p · 30fps</div>
+    <div id="modelStatus" style="color:#333">AI: loading</div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- LEFT -->
+  <div class="cam-area">
+    <!-- MAIN FEED -->
+    <div class="main-feed" id="mainFeed">
+      <video id="mainVideo" autoplay muted playsinline></video>
+      <canvas id="mainCanvas"></canvas>
+      <div class="feed-label" id="mainLabel">CAM-01 · MAIN ENTRANCE · HQ NORTH</div>
+      <div class="rec-badge"><div class="rdot"></div>REC</div>
+      <div class="feed-ts" id="feedTs"></div>
+      <div class="alert-overlay" id="alertOverlay">
+        <div class="at">⚠ UNAUTHORIZED ACCESS DETECTED</div>
+        <div class="ab" id="alertDetail">Unknown person — no match in employee database</div>
+        <div class="act">
+          <button class="act-btn btn-r" onclick="doAction('notify')">Notify Security</button>
+          <button class="act-btn btn-a" onclick="doAction('watchlist')">Add to Watchlist</button>
+          <button class="act-btn btn-d" onclick="doAction('dismiss')">Dismiss</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- THUMBNAIL STRIP -->
+    <div class="thumb-strip" id="thumbStrip"></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-l">In Frame</div>
+        <div class="kpi-v g" id="kOcc">0</div>
+        <div class="kpi-s">current occupancy</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Recognized</div>
+        <div class="kpi-v b" id="kEmp">0</div>
+        <div class="kpi-s">employees ID'd</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-l">Avg Dwell</div>
+        <div class="kpi-v" id="kDwell">—</div>
+        <div class="kpi-s">seconds on site</div>
+      </div>
+      <div class="kpi clickable" onclick="openModal()" title="Click to review">
+        <div class="kpi-l">Alerts</div>
+        <div class="kpi-v r" id="kAlerts">0</div>
+        <div class="kpi-s">tap to review ↗</div>
+      </div>
+    </div>
+
+    <div class="sec-head">Detected Persons</div>
+    <div class="who-list" id="whoList"></div>
+
+    <div class="ai-box">
+      <div class="ai-label"><div class="ai-dot"></div>AI Summary</div>
+      <div class="ai-text" id="aiText">Initializing camera analysis...</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="bstat"><div class="bstat-n" id="bEntries">0</div><div class="bstat-l">Entries Today</div></div>
+  <div class="bstat"><div class="bstat-n" id="bExits">0</div><div class="bstat-l">Exits Today</div></div>
+  <div class="bstat"><div class="bstat-n" id="bUnk">0</div><div class="bstat-l">Unknown Visitors</div></div>
+  <div class="bstat"><div class="bstat-n" id="bFaces">0</div><div class="bstat-l">Faces Detected</div></div>
+</footer>
+
+<!-- ALERT MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">⚠ UNAUTHORIZED ACCESS</div>
+      <button class="modal-x" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row"><div class="modal-row-l">Status</div><div class="modal-row-v red" id="mStatus">UNRECOGNIZED PERSON</div></div>
+      <div class="modal-row"><div class="modal-row-l">Detected At</div><div class="modal-row-v" id="mTime">—</div></div>
+      <div class="modal-row"><div class="modal-row-l">Camera</div><div class="modal-row-v" id="mCam">CAM-01 · Main Entrance</div></div>
+      <div class="modal-row"><div class="modal-row-l">Confidence</div><div class="modal-row-v" id="mConf">—</div></div>
+      <div class="modal-row"><div class="modal-row-l">Action Required</div><div class="modal-row-v">Verify identity and authorize or remove from premises</div></div>
+    </div>
+    <div class="modal-acts">
+      <button class="modal-btn mb-r" onclick="doModalAction('notify')">Notify Security</button>
+      <button class="modal-btn mb-a" onclick="doModalAction('watchlist')">Add to Watchlist</button>
+      <button class="modal-btn mb-m" onclick="doModalAction('dismiss')">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── EMPLOYEE DATABASE ─────────────────────────────────────────────
+const EMPLOYEES = [
+  { name:'Sarah K.',   id:'EMP-0421', dept:'Engineering',  role:'emp', col:'#22c55e' },
+  { name:'James M.',   id:'EMP-0198', dept:'Sales',         role:'emp', col:'#22c55e' },
+  { name:'Priya R.',   id:'EMP-0337', dept:'Product',       role:'emp', col:'#22c55e' },
+  { name:'Daniel T.',  id:'EMP-0512', dept:'Security',      role:'emp', col:'#22c55e' },
+  { name:'Aisha N.',   id:'EMP-0089', dept:'HR',            role:'emp', col:'#22c55e' },
+  { name:'Marcus L.',  id:'EMP-0274', dept:'Finance',       role:'emp', col:'#22c55e' },
+  { name:'Guest Pass', id:'VIS-0001', dept:'Visitor',       role:'vis', col:'#f59e0b' },
+];
+
+const CAM_LABELS = [
+  'CAM-01 · MAIN ENTRANCE · HQ NORTH',
+  'CAM-02 · LOBBY FLOOR · HQ SOUTH',
+  'CAM-03 · SERVER ROOM · B2',
+  'CAM-04 · PARKING · LEVEL B1',
+  'CAM-05 · ROOFTOP ACCESS',
+  'CAM-06 · EAST CORRIDOR · FL3',
+  'CAM-07 · RECEPTION · FL1',
+  'CAM-08 · EMERGENCY EXIT · FL2',
+];
+
+// ── STATE ─────────────────────────────────────────────────────────
+let faceApiLoaded = false;
+let detections = [];
+let personMap = new Map(); // face index -> assigned employee
+let entries = 0, exits = 0, unkCount = 0, alertCount = 0;
+let totalFaces = 0;
+let dwellData = new Map();
+let lastDetectionCount = 0;
+let activeCam = 0;
+let lastAlertTime = null;
+let aiSummaries = [];
+
+function $(id) { return document.getElementById(id); }
+
+// ── CLOCK ─────────────────────────────────────────────────────────
+function tick() {
+  const now = new Date();
+  $('clk').textContent = now.toTimeString().slice(0,8);
+  $('feedTs').textContent = now.toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+setInterval(tick, 1000); tick();
+
+// ── LOAD FACE-API MODELS ──────────────────────────────────────────
+async function loadModels() {
+  $('loadStatus').textContent = 'Loading detection models...';
+  try {
+    await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+    $('loadStatus').textContent = 'Loading landmark models...';
+    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    $('loadStatus').textContent = 'Loading recognition models...';
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+    faceApiLoaded = true;
+    $('modelStatus').textContent = 'AI: ready';
+    $('modelStatus').style.color = '#22c55e';
+    $('loadStatus').textContent = 'Requesting camera access...';
+    await startWebcam();
+  } catch(e) {
+    $('loadStatus').textContent = 'Error: ' + e.message;
+    $('modelStatus').textContent = 'AI: error';
+  }
+}
+
+// ── WEBCAM ────────────────────────────────────────────────────────
+async function startWebcam() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width:{ideal:1280}, height:{ideal:720}, facingMode:'user' },
+      audio: false
+    });
+    const video = $('mainVideo');
+    video.srcObject = stream;
+    await new Promise(r => video.onloadedmetadata = r);
+    video.play();
+
+    $('loading').style.opacity = '0';
+    $('loading').style.transition = 'opacity .5s';
+    setTimeout(() => $('loading').style.display='none', 500);
+
+    buildThumbs();
+    entries = 3 + Math.floor(Math.random()*5);
+    $('bEntries').textContent = entries;
+    startDetection();
+    updateAI();
+  } catch(e) {
+    $('loadStatus').textContent = 'Camera access denied — click to retry';
+    $('loading').onclick = () => startWebcam();
+  }
+}
+
+// ── FACE DETECTION LOOP ───────────────────────────────────────────
+async function startDetection() {
+  const video = $('mainVideo');
+  const canvas = $('mainCanvas');
+
+  async function detect() {
+    if (!faceApiLoaded || video.paused || video.ended) {
+      requestAnimationFrame(detect); return;
+    }
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+
+    const results = await faceapi
+      .detectAllFaces(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.45 }))
+      .withFaceLandmarks();
+
+    detections = results;
+    drawOverlays(results, canvas);
+    updateSidebar(results);
+
+    // Count total faces seen
+    if (results.length > lastDetectionCount) {
+      const newFaces = results.length - lastDetectionCount;
+      totalFaces += newFaces;
+      $('bFaces').textContent = totalFaces;
+    }
+    lastDetectionCount = results.length;
+
+    setTimeout(() => requestAnimationFrame(detect), 150);
+  }
+  detect();
+}
+
+// ── ASSIGN IDENTITY ───────────────────────────────────────────────
+function getIdentity(idx) {
+  if (!personMap.has(idx)) {
+    // 75% chance employee, 15% visitor, 10% unknown
+    const r = Math.random();
+    if (r < 0.72) {
+      personMap.set(idx, EMPLOYEES[Math.floor(Math.random()*6)]);
+    } else if (r < 0.87) {
+      personMap.set(idx, EMPLOYEES[6]); // visitor
+    } else {
+      personMap.set(idx, { name:'Unknown Person', id:'NO MATCH', dept:'Not in database', role:'unk', col:'#ef4444' });
+    }
+  }
+  return personMap.get(idx);
+}
+
+// ── DRAW OVERLAYS ─────────────────────────────────────────────────
+function drawOverlays(results, canvas) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  results.forEach((det, i) => {
+    const box = det.detection.box;
+    const p = getIdentity(i);
+    const conf = Math.floor(det.detection.score * 100);
+
+    // Bounding box — corners only
+    ctx.strokeStyle = p.col;
+    ctx.lineWidth = 2;
+    const cs = 12;
+    const {x, y, width: w, height: h} = box;
+    ctx.beginPath();
+    ctx.moveTo(x, y+cs); ctx.lineTo(x,y); ctx.lineTo(x+cs,y);
+    ctx.moveTo(x+w-cs, y); ctx.lineTo(x+w,y); ctx.lineTo(x+w,y+cs);
+    ctx.moveTo(x+w, y+h-cs); ctx.lineTo(x+w,y+h); ctx.lineTo(x+w-cs,y+h);
+    ctx.moveTo(x+cs, y+h); ctx.lineTo(x,y+h); ctx.lineTo(x,y+h-cs);
+    ctx.stroke();
+
+    // Scan line effect on face
+    if (p.role === 'unk') {
+      ctx.strokeStyle = 'rgba(239,68,68,.2)';
+      ctx.lineWidth = 1;
+      for (let sy = y; sy < y+h; sy += 6) {
+        ctx.beginPath(); ctx.moveTo(x, sy); ctx.lineTo(x+w, sy); ctx.stroke();
+      }
+    }
+
+    // Name card
+    const label = p.role === 'unk' ? 'UNKNOWN PERSON' : p.name.toUpperCase();
+    const sub = p.role === 'unk' ? `NO MATCH · ${conf}%` : `${p.id} · ${conf}%`;
+    const fs = 11;
+    ctx.font = `600 ${fs}px "SF Mono", monospace`;
+    const cardW = Math.max(ctx.measureText(label).width + 16, ctx.measureText(sub).width + 16);
+    const cardH = 34;
+    const cardX = x;
+    const cardY = y - cardH - 6;
+
+    ctx.fillStyle = 'rgba(0,0,0,.85)';
+    ctx.beginPath();
+    ctx.roundRect(cardX, Math.max(4, cardY), cardW, cardH, 3);
+    ctx.fill();
+
+    ctx.fillStyle = p.col;
+    ctx.textAlign = 'left';
+    ctx.fillText(label, cardX+8, Math.max(4,cardY)+15);
+    ctx.font = `${fs-1}px "SF Mono", monospace`;
+    ctx.fillStyle = 'rgba(255,255,255,.45)';
+    ctx.fillText(sub, cardX+8, Math.max(4,cardY)+28);
+
+    // Dwell time badge
+    if (!dwellData.has(i)) dwellData.set(i, Date.now());
+    const dwell = Math.floor((Date.now() - dwellData.get(i)) / 1000);
+    if (dwell > 2) {
+      const dtag = dwell + 's';
+      ctx.fillStyle = 'rgba(59,130,246,.85)';
+      ctx.beginPath();
+      ctx.roundRect(x + w/2 - 18, y+h+4, 36, 14, 6);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '600 8px "SF Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(dtag, x+w/2, y+h+14);
+    }
+
+    // Trigger unknown alert
+    if (p.role === 'unk' && !p._alerted) {
+      p._alerted = true;
+      triggerAlert(p, conf);
+    }
+  });
+
+  // Clear dwell for faces no longer in frame
+  if (results.length < dwellData.size) {
+    const toDelete = [];
+    dwellData.forEach((_, k) => { if (k >= results.length) toDelete.push(k); });
+    toDelete.forEach(k => { dwellData.delete(k); personMap.delete(k); });
+    exits++; $('bExits').textContent = exits;
+  }
+}
+
+// ── TRIGGER ALERT ─────────────────────────────────────────────────
+function triggerAlert(p, conf) {
+  alertCount++;
+  unkCount++;
+  lastAlertTime = new Date().toTimeString().slice(0,8);
+  $('kAlerts').textContent = alertCount;
+  $('bUnk').textContent = unkCount;
+  $('mTime').textContent = lastAlertTime;
+  $('mConf').textContent = conf + '% — No match in employee database';
+
+  const overlay = $('alertOverlay');
+  overlay.style.display = 'block';
+  overlay.querySelector('.ab').textContent = `Unknown person detected · ${CAM_LABELS[activeCam].split('·')[0].trim()} · ${lastAlertTime}`;
+  $('thumbStrip').children[activeCam]?.querySelector('.thumb-alert')?.style.setProperty('display','block');
+  setTimeout(() => overlay.style.display='none', 6000);
+}
+
+// ── SIDEBAR UPDATE ────────────────────────────────────────────────
+function updateSidebar(results) {
+  $('kOcc').textContent = results.length;
+  const empCount = results.filter((_, i) => {
+    const p = getIdentity(i);
+    return p && p.role === 'emp';
+  }).length;
+  $('kEmp').textContent = empCount;
+
+  // Dwell avg
+  let totalDwell = 0;
+  dwellData.forEach(start => totalDwell += Date.now() - start);
+  if (dwellData.size > 0) {
+    $('kDwell').textContent = Math.floor(totalDwell / dwellData.size / 1000) + 's';
+  }
+
+  // Who list
+  const wl = $('whoList');
+  wl.innerHTML = '';
+  results.forEach((_, i) => {
+    const p = getIdentity(i);
+    const dwell = Math.floor((Date.now() - (dwellData.get(i)||Date.now())) / 1000);
+    const badge = p.role==='emp' ? 'b-emp' : p.role==='vis' ? 'b-vis' : 'b-unk';
+    const badgeTxt = p.role==='emp' ? 'Employee' : p.role==='vis' ? 'Visitor' : 'Unknown';
+    const row = document.createElement('div');
+    row.className = 'who-row' + (p.role==='unk' ? ' unk' : '');
+    row.innerHTML = `<div class="pip" style="background:${p.col}"></div><div class="who-info"><div class="who-name">${p.name}</div><div class="who-dept">${p.id} · ${p.dept}</div></div><span class="who-badge ${badge}">${badgeTxt}</span><div class="who-dwell">${dwell}s</div>`;
+    wl.appendChild(row);
+  });
+}
+
+// ── AI SUMMARY ────────────────────────────────────────────────────
+const summaries = [
+  (n, e, u) => `${n} ${n===1?'person':'people'} in frame. ${e} employee${e!==1?'s':''} recognized. All access points secured.`,
+  (n, e, u) => `Monitoring ${n} individual${n!==1?'s':''}. ${u>0 ? `⚠ ${u} unknown — security notified.` : 'All personnel verified.'}`,
+  (n, e, u) => `Normal occupancy levels. ${e} of ${n} positively identified as staff. ${u>0?`${u} unverified.`:'No access violations.'}`,
+  (n, e, u) => `${n===0 ? 'No activity detected. All clear.' : `Active surveillance: ${e} employee${e!==1?'s':''} on site.${u>0?' Alert: unknown individual present.':''}`}`,
+];
+let summaryIdx = 0;
+function updateAI() {
+  const n = detections.length;
+  const e = Array.from({length:n}, (_,i) => getIdentity(i)).filter(p=>p&&p.role==='emp').length;
+  const u = Array.from({length:n}, (_,i) => getIdentity(i)).filter(p=>p&&p.role==='unk').length;
+  $('aiText').textContent = summaries[summaryIdx % summaries.length](n,e,u);
+  summaryIdx++;
+  setTimeout(updateAI, 4000);
+}
+
+// ── THUMBNAILS ────────────────────────────────────────────────────
+function buildThumbs() {
+  const strip = $('thumbStrip');
+  strip.innerHTML = '';
+  CAM_LABELS.forEach((label, i) => {
+    const div = document.createElement('div');
+    div.className = 'thumb' + (i===0?' active':'');
+    div.onclick = () => selectCam(i, div);
+    const shortLabel = label.split('·')[0].trim() + ' · ' + (label.split('·')[1]||'').trim();
+
+    if (i === 0) {
+      // Mirror the webcam
+      div.innerHTML = `
+        <div class="thumb-live"></div>
+        <div class="thumb-alert"></div>
+        <video autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+        <div class="thumb-label">${shortLabel}</div>
+        <div class="thumb-count" id="tc${i}">—</div>
+      `;
+      const tv = div.querySelector('video');
+      tv.srcObject = $('mainVideo').srcObject;
+    } else {
+      // Simulated camera canvas
+      div.innerHTML = `
+        <div class="thumb-live"></div>
+        <div class="thumb-alert"></div>
+        <canvas id="tc_canvas_${i}" style="width:100%;height:100%;"></canvas>
+        <div class="thumb-label">${shortLabel}</div>
+        <div class="thumb-count" id="tc${i}">—</div>
+      `;
+      setTimeout(() => animateThumb(i), i * 300);
+    }
+    strip.appendChild(div);
+  });
+}
+
+// Simulated CCTV animation for thumbnail cameras
+function animateThumb(i) {
+  const c = $(`tc_canvas_${i}`);
+  if (!c) return;
+  c.width = 160; c.height = 110;
+  const ctx = c.getContext('2d');
+  const numPeople = Math.floor(Math.random()*3);
+  const people = Array.from({length:numPeople}, () => ({
+    x: Math.random()*120+20, y: Math.random()*60+25,
+    vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.2,
+    size: 10 + Math.random()*8,
+  }));
+
+  function draw() {
+    ctx.fillStyle = '#0a0b0d';
+    ctx.fillRect(0,0,160,110);
+    // subtle grid
+    ctx.strokeStyle = '#111318'; ctx.lineWidth = .5;
+    for(let x=0;x<160;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,110);ctx.stroke();}
+    for(let y=0;y<110;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(160,y);ctx.stroke();}
+    // people blobs
+    people.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<5||p.x>155) p.vx*=-1;
+      if(p.y<15||p.y>95) p.vy*=-1;
+      ctx.fillStyle='#1e2028';
+      ctx.beginPath(); ctx.ellipse(p.x,p.y+p.size*.4,p.size*.35,p.size*.6,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#252830';
+      ctx.beginPath(); ctx.arc(p.x,p.y-p.size*.2,p.size*.22,0,Math.PI*2); ctx.fill();
+      // box
+      ctx.strokeStyle='rgba(34,197,94,.6)'; ctx.lineWidth=.8;
+      ctx.strokeRect(p.x-p.size*.4, p.y-p.size*.6, p.size*.8, p.size*1.1);
+    });
+    // timestamp
+    ctx.font='6px "SF Mono",monospace'; ctx.fillStyle='rgba(255,255,255,.2)'; ctx.textAlign='left';
+    ctx.fillText(new Date().toTimeString().slice(0,8), 4, 106);
+    // update count
+    const tc = $(`tc${i}`);
+    if(tc) tc.textContent = people.length > 0 ? people.length : '0';
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function selectCam(i, el) {
+  activeCam = i;
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  $('mainLabel').textContent = CAM_LABELS[i];
+  $('mCam').textContent = CAM_LABELS[i].split('·')[0].trim() + ' · ' + (CAM_LABELS[i].split('·')[1]||'').trim();
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────
+function doAction(type) {
+  $('alertOverlay').style.display = 'none';
+  if (type === 'notify') addAINote('Security team alerted via push notification.');
+  if (type === 'watchlist') addAINote('Unknown individual added to watchlist.');
+}
+function addAINote(msg) { $('aiText').textContent = msg; setTimeout(updateAI, 3000); }
+
+function openModal() {
+  if (alertCount === 0) return;
+  $('mTime').textContent = lastAlertTime || new Date().toTimeString().slice(0,8);
+  $('modalBg').classList.add('open');
+}
+function closeModal() { $('modalBg').classList.remove('open'); }
+function doModalAction(type) {
+  const msgs = { notify:'Security team notified.', watchlist:'Added to watchlist.', dismiss:'Alert dismissed.' };
+  $('mStatus').textContent = msgs[type];
+  setTimeout(closeModal, 1000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+loadModels();
+</script>
+</body>
+</html>

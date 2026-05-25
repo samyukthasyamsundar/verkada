@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verkada Infrastructure</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    padding: 48px 72px;
+    background: #000;
+    color: #fff;
+  }
+  .slide.active { display: flex; flex-direction: column; justify-content: center; }
+  .slide.center { align-items: center; text-align: center; }
+
+  /* white background slides */
+  .slide.white {
+    background: #fafaf9;
+    color: #111;
+  }
+  .slide.white .label { color: #bbb; }
+  .slide.white .rule { background: #111; }
+  .slide.white h2 { color: rgba(0,0,0,0.35); }
+  .slide.white h2 em { color: #111; font-weight: 300; }
+  .slide.white .cell { background: #fafaf9; }
+  .slide.white .cell h3 { color: #111; }
+  .slide.white .cell p { color: #777; }
+  .slide.white .cell .n { color: #bbb; }
+  .slide.white .grid { background: #e8e8e5; border-color: #e8e8e5; }
+  .slide.white .items li { color: #111; border-color: #e8e8e5; }
+  .slide.white .items li:first-child { border-color: #e8e8e5; }
+  .slide.white .items li .idx { color: #bbb; }
+  .slide.white .code { background: #f4f4f2; border-color: #e8e8e5; color: #888; }
+  .slide.white .code .k { color: #111; }
+  .slide.white .code .c { color: #ccc; }
+  .slide.white .flow { border-color: #e8e8e5; }
+  .slide.white .flow-item { background: #fafaf9; border-color: #e8e8e5; }
+  .slide.white .flow-item .fi-label { color: #bbb; }
+  .slide.white .flow-item .fi-name { color: #111; }
+  .slide.white .flow-item.blocked { background: #f4f4f2; }
+  .slide.white .flow-item.blocked .fi-name { color: #ccc; }
+  .slide.white .body { color: #777; }
+  .slide.white .s-end h2 { color: #111; }
+  .slide.white .s-end p { color: #777; }
+  .slide.white .stats { background: #e8e8e5; border-color: #e8e8e5; }
+  .slide.white .stat { background: #fafaf9; }
+  .slide.white .stat .num { color: #111; }
+  .slide.white .stat .lbl { color: #bbb; }
+  .slide.white.s-break h2 { color: #111; }
+  .slide.white.s-break h2 em { color: #111; }
+  .slide.white .scenario { border-color: #e8e8e5; }
+  .slide.white .scenario p { color: #111; }
+  .slide.white .alert-card { background: rgba(239,68,68,.04); }
+  .slide.white .alert-body { color: #111; }
+
+  /* labels */
+  .label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 18px;
+    font-weight: 400;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+
+  /* rule */
+  .rule { width: 40px; height: 1px; background: #fff; margin-bottom: 40px; }
+  .rule.center-rule { margin: 0 auto 40px; }
+
+  /* TITLE SLIDE */
+  .s-title h1 {
+    font-size: 60px;
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: rgba(255,255,255,0.45);
+    max-width: 740px;
+  }
+  .s-title.center h1 { max-width: 800px; }
+  .s-title h1 em { font-style: normal; font-weight: 300; color: #fff; }
+  .s-title p {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.7;
+    max-width: 500px;
+    margin-top: 32px;
+  }
+  .s-title.center p { margin: 32px auto 0; }
+
+  /* DARK SECTION BREAK */
+  .s-break {
+    background: #000;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .s-break h2 {
+    font-size: 52px;
+    font-weight: 300;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    color: rgba(255,255,255,0.45);
+    max-width: 680px;
+  }
+  .s-break h2 em { font-style: normal; font-weight: 300; color: #fff; }
+
+  /* CONTENT */
+  .s-content h2 {
+    font-size: 38px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    margin-bottom: 22px;
+    color: rgba(255,255,255,0.45);
+  }
+  .s-content h2 em { font-style: normal; font-weight: 300; color: #fff; }
+
+  /* GRID */
+  .grid { display: grid; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; }
+  .grid.g2 { grid-template-columns: 1fr 1fr; }
+  .grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid.g4 { grid-template-columns: repeat(4,1fr); }
+
+  .cell { background: #000; padding: 24px 28px; }
+  .cell .n { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-bottom: 12px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace; }
+  .cell h3 { font-size: 17px; font-weight: 500; color: #fff; margin-bottom: 10px; line-height: 1.3; }
+  .cell p { font-size: 13px; color: #666; line-height: 1.75; }
+  .icon-box { width:36px; height:36px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .icon-box svg { width:18px; height:18px; }
+  .white .icon-box { background:rgba(0,0,0,0.06); }
+  .action-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:24px; }
+  .chip { background:#f4f4f2; border:1px solid #e0e0dd; padding:6px 14px; font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Monaco,Consolas,monospace; font-size:12px; color:#333; border-radius:9999px; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#e8e8e5; border:1px solid #e8e8e5; margin-top:36px; }
+  .kpi-cell { background:#fafaf9; padding:40px 32px; }
+  .kpi-cell .kpi-label { font-size:9px; letter-spacing:2px; color:#bbb; text-transform:uppercase; margin-bottom:18px; font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Monaco,Consolas,monospace; }
+  .kpi-cell .kpi-val { font-size:62px; font-weight:200; color:#111; letter-spacing:-3px; line-height:1; }
+  .kpi-cell .kpi-sub { font-size:12px; color:#aaa; margin-top:14px; line-height:1.65; }
+
+  /* SPLIT */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+
+  /* BODY TEXT */
+  .body { font-size: 18px; color: #777; line-height: 1.8; margin-bottom: 32px; max-width: 520px; }
+
+  /* LIST */
+  .items { list-style: none; }
+  .items li {
+    display: flex; align-items: baseline; gap: 16px;
+    padding: 16px 0; border-bottom: 1px solid #1a1a1a;
+    font-size: 16px; color: #fff; line-height: 1.5;
+  }
+  .items li:first-child { border-top: 1px solid #1a1a1a; }
+  .items li .idx { font-size: 10px; letter-spacing: 1px; color: #444; min-width: 20px; }
+
+  /* CODE */
+  .code {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 28px 32px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 2;
+    color: #666;
+    white-space: pre;
+  }
+  .code .k { color: #fff; font-weight: 500; }
+  .code .s { color: #888; }
+  .code .c { color: #333; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; margin-top: 48px; }
+  .stat { background: #000; padding: 28px 32px; }
+  .stat .num { font-size: 36px; font-weight: 300; letter-spacing: -1px; color: #fff; margin-bottom: 4px; }
+  .stat .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #444; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace; }
+
+  /* FLOW */
+  .flow { display: flex; align-items: center; margin-top: 40px; border: 1px solid #1a1a1a; overflow: hidden; }
+  .flow-item { flex:1; padding: 24px 28px; border-right: 1px solid #1a1a1a; background: #000; }
+  .flow-item:last-child { border-right: none; }
+  .fi-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-bottom: 6px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace; }
+  .fi-name { font-size: 15px; font-weight: 500; color: #fff; }
+  .flow-item.blocked { background: #0a0a0a; }
+  .flow-item.blocked .fi-name { color: #333; }
+
+  /* SCENARIO BOX */
+  .scenario {
+    border: 1px solid #1a1a1a;
+    padding: 40px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .scenario-tag {
+    position: absolute;
+    top: -1px; left: 32px;
+    background: #000;
+    padding: 0 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ef4444;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+  .scenario p { font-size: 20px; color: #fff; line-height: 1.7; font-weight: 300; }
+  .scenario p strong { font-weight: 600; }
+
+  /* ALERT CARD */
+  .alert-card {
+    border: 1px solid #ef444444;
+    background: rgba(239,68,68,.04);
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .alert-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; margin-bottom: 8px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace; }
+  .alert-body { font-size: 16px; color: #fff; line-height: 1.6; }
+
+  /* END */
+  .s-end { align-items: flex-start; }
+  .s-end h2 { font-size: 56px; font-weight: 300; letter-spacing: -2px; line-height: 1.05; max-width: 700px; margin-bottom: 40px; color: #fff; }
+  .s-end h2 em { font-style: normal; font-weight: 600; }
+  .s-end p { font-size: 18px; color: #777; line-height: 1.8; max-width: 500px; }
+
+  /* NAV */
+  nav { position: fixed; bottom: 36px; right: 48px; display: flex; align-items: center; gap: 8px; }
+  nav button { background: none; border: 1px solid #222; color: #555; width: 36px; height: 36px; font-size: 14px; cursor: pointer; transition: all .1s; }
+  nav button:hover { border-color: #fff; color: #fff; }
+  nav .pg { font-size: 11px; letter-spacing: 1px; color: #333; min-width: 36px; text-align: center; }
+  .pg-fixed { position: fixed; bottom: 42px; left: 48px; font-size: 11px; letter-spacing: 1.5px; color: #222; }
+
+  /* VERKADA LOGO MARK */
+  .vk-mark { position: fixed; top: 0; right: 0; padding: 10px 20px; z-index: 200; pointer-events: none; }
+  .vk-mark img { height: 22px; }
+
+  /* TITLE LOGO */
+  .title-logo { margin-bottom: 36px; }
+  .title-logo img { height: 40px; }
+</style>
+</head>
+<body>
+
+<!-- 1. TITLE — black -->
+<div class="slide s-title center active">
+  <div class="title-logo">
+    <img src="verkada-logo.png" alt="Verkada"/>
+  </div>
+  <div class="label">Infrastructure Design</div>
+  <div class="rule center-rule"></div>
+  <h1>Zero-Trust Network Architecture for <em>Physical Security Infrastructure</em></h1>
+  <p>A real scenario. A real threat. Built, deployed, and running in under two minutes.</p>
+</div>
+
+<!-- 2. ABOUT ME — black -->
+<div class="slide s-title">
+  <div class="label">About Me</div>
+  <div class="rule"></div>
+  <h1><em>Samyuktha</em> Syamsundar</h1>
+  <p style="max-width:600px">B.S. Cybersecurity, Purdue University &nbsp;·&nbsp; St. Louis, Missouri</p>
+  <div style="margin-top:48px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;max-width:600px">
+    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Reading</div><div style="font-size:13px;color:#aaa;line-height:1.6">Currently into security research and sci-fi</div></div>
+    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Coffee</div><div style="font-size:13px;color:#aaa;line-height:1.6">Always hunting for the best local roasters</div></div>
+    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Training</div><div style="font-size:13px;color:#aaa;line-height:1.6">Weightlifting and outdoor runs</div></div>
+    <div style="background:#000;padding:24px"><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px">Security</div><div style="font-size:13px;color:#aaa;line-height:1.6">CTFs, cloud security labs, and homelab builds</div></div>
+  </div>
+</div>
+
+<!-- 3. THE SCENARIO — white -->
+<div class="slide s-content white">
+  <div class="label">01 The Scenario</div>
+  <h2>Meet <em>Helix Labs</em></h2>
+  <div class="scenario">
+    <div class="scenario-tag">Scenario</div>
+    <p>A 200-person biotech company. Two offices in San Francisco. Verkada cameras at every entrance, lab, and parking structure. Their IT team needs centralized remote management and secure cloud storage for all footage.</p>
+  </div>
+  <div class="grid g2" style="margin-top:0">
+    <div class="cell">
+      <div class="n">Functional Requirements</div>
+      <h3>What the system must do</h3>
+      <ul style="list-style:none;margin-top:10px">
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Isolate camera systems from corporate LAN — no shared broadcast domain</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Provide a single authenticated, auditable remote access point for IT admins</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Store encrypted footage in private cloud — inaccessible from the public internet</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5">Enable centralized management of Verkada cameras across both office locations</li>
+        <li style="font-size:13px;color:#777;padding:5px 0">Deploy and tear down the full environment in under two minutes via IaC</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="n">Non-functional Requirements</div>
+      <h3>How the system must perform</h3>
+      <ul style="list-style:none;margin-top:10px">
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Cost efficiency</strong> — pay-as-you-go cloud spend; no dedicated hardware CapEx</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Ease of maintenance</strong> — version-controlled IaC with zero configuration drift</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Network isolation</strong> — enforced by architecture, not configuration alone</li>
+        <li style="font-size:13px;color:#777;padding:5px 0;border-bottom:1px solid #e8e8e5"><strong style="color:#555">Auditability &amp; reporting</strong> — all access logged; compliant with SOC 2, ISO 27001, HIPAA</li>
+        <li style="font-size:13px;color:#777;padding:5px 0"><strong style="color:#555">Multi-client scalability</strong> — architecture must template across future Helix Labs deployments</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 3. THE THREAT — black -->
+<div class="slide s-break">
+  <div class="label">01 The Scenario</div>
+  <h2>When every device shares the same network, one breach can <em>compromise everything.</em></h2>
+</div>
+
+<!-- 4. SOLUTION CONSIDERATIONS — white -->
+<div class="slide s-content white">
+  <div class="label">02 The Solution</div>
+  <h2>Before building anything, we <em>evaluated the tradeoffs.</em></h2>
+  <div class="grid g3">
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9.5 9.5h4a2 2 0 0 1 0 4h-3a2 2 0 0 0 0 4H15"/></svg></div>
+      <div class="n">Cost</div>
+      <h3>Cloud vs. on-prem</h3>
+      <p>~$45/month vs. $50K+ on-prem CapEx. 60–70% lower TCO over 3 years.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+      <div class="n">Ease of Maintenance</div>
+      <h3>Zero configuration drift</h3>
+      <p>Everything in Terraform. Any engineer can rebuild the full environment in one command.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="n">Network Isolation</div>
+      <h3>Architecture, not rules</h3>
+      <p>Private subnet has no IGW route — no path exists by design, not by firewall configuration.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+      <div class="n">Total Cost of Ownership</div>
+      <h3>No on-site IT overhead</h3>
+      <p>Managed AWS absorbs patching, failures, and scaling. Pay for what you use.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
+      <div class="n">Reporting &amp; Auditability</div>
+      <h3>Compliance-ready from day one</h3>
+      <p>CloudTrail, VPC Flow Logs, S3 access logs built in. SOC 2, ISO 27001, HIPAA covered.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+      <div class="n">Multi-client Scalability</div>
+      <h3>One template, every client</h3>
+      <p>Parameterized Terraform module. Same zero-trust architecture for any client in &lt;2 minutes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5. THE SOLUTION — white -->
+<div class="slide s-content white">
+  <div class="label">02 The Solution</div>
+  <h2>Six layers of protection. <em>One secure environment.</em></h2>
+  <div class="grid g3">
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+      <div class="n">01 VPC</div>
+      <h3>Logically isolated network</h3>
+      <p>Helix Labs' own segment of AWS — no other tenant can see in or route to it.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="16" width="20" height="5" rx="1"/></svg></div>
+      <div class="n">02 Subnet Segmentation</div>
+      <h3>Camera systems off the corporate LAN</h3>
+      <p>Public and private subnets keep admin access separate from camera infrastructure.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div class="n">03 Bastion Host</div>
+      <h3>Single hardened ingress point</h3>
+      <p>All SSH tunnels through one IP-locked bastion. No direct exposure of private subnet hosts.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+      <div class="n">04 Security Groups</div>
+      <h3>Deny-all with explicit egress only</h3>
+      <p>Zero inbound from the internet. Egress locked to port 443 HTTPS — nothing else gets out.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+      <div class="n">05 S3 + IAM</div>
+      <h3>Least-privilege storage access</h3>
+      <p>IAM role, no static credentials. Policy scoped to three actions on one bucket ARN.</p>
+    </div>
+    <div class="cell">
+      <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <div class="n">06 Terraform (IaC)</div>
+      <h3>Version-controlled and auditable</h3>
+      <p>Every resource is code. Peer-reviewable, repeatable, deployable in under two minutes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5. ARCHITECTURE DIAGRAM — black -->
+<div class="slide s-content">
+  <div class="label">02 The Solution</div>
+  <h2>Physical <em>architecture</em></h2>
+  <div style="flex:1;display:flex;align-items:center;padding-top:8px">
+    <svg viewBox="0 0 1040 310" style="width:100%;max-height:340px" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ag" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="6" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 Z" fill="#22c55e"/></marker>
+        <marker id="aa" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="6" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 Z" fill="#f59e0b"/></marker>
+        <marker id="ac" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="6" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 Z" fill="#22d3ee"/></marker>
+        <marker id="al" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="6" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 Z" fill="#6b7280"/></marker>
+      </defs>
+
+      <!-- VPC boundary -->
+      <rect x="118" y="60" width="802" height="235" rx="8" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="8,4"/>
+      <text x="133" y="77" font-size="9" fill="#64748b" font-family="sans-serif" font-weight="700" letter-spacing="1.5">AWS VPC  ·  10.0.0.0/16</text>
+
+      <!-- PUBLIC SUBNET -->
+      <rect x="138" y="90" width="165" height="178" rx="6" fill="#071810" stroke="#22c55e" stroke-width="1" stroke-dasharray="5,3"/>
+      <text x="221" y="107" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="sans-serif" font-weight="700" letter-spacing="1">PUBLIC · 10.0.1.0/24</text>
+
+      <!-- PRIVATE SUBNET (wider to hold cameras + server) -->
+      <rect x="322" y="90" width="392" height="178" rx="6" fill="#060d1f" stroke="#3b82f6" stroke-width="1" stroke-dasharray="5,3"/>
+      <text x="518" y="107" text-anchor="middle" font-size="7.5" fill="#3b82f6" font-family="sans-serif" font-weight="700" letter-spacing="1">PRIVATE  ·  10.0.2.0/24</text>
+
+      <!-- ── INTERNET NODE (cx=52, cy=200) ── -->
+      <g transform="translate(52,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#1f2937"/>
+        <circle cx="0" cy="0" r="15" fill="none" stroke="#9ca3af" stroke-width="1.6"/>
+        <ellipse cx="0" cy="0" rx="7.5" ry="15" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+        <line x1="-15" y1="0" x2="15" y2="0" stroke="#9ca3af" stroke-width="1.2"/>
+        <line x1="-12" y1="-7" x2="12" y2="-7" stroke="#9ca3af" stroke-width="0.8"/>
+        <line x1="-12" y1="7" x2="12" y2="7" stroke="#9ca3af" stroke-width="0.8"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#9ca3af" font-family="sans-serif" font-weight="700">INTERNET</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#6b7280" font-family="monospace">0.0.0.0/0</text>
+      </g>
+
+      <!-- ── BASTION NODE (cx=221, cy=200) ── -->
+      <g transform="translate(221,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#14532d"/>
+        <path d="M0,-15 L13,-8 L13,3 C13,11 6.5,16 0,18 C-6.5,16 -13,11 -13,3 L-13,-8 Z" fill="none" stroke="#22c55e" stroke-width="1.8"/>
+        <path d="M-6,0 L-1,6 L8,-6" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#22c55e" font-family="sans-serif" font-weight="700">BASTION</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#4ade80" font-family="monospace">port 22 · CIDR-locked</text>
+      </g>
+
+      <!-- ── CAMERAS NODE (cx=418, cy=200) ── -->
+      <g transform="translate(418,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#0e2a33"/>
+        <!-- bullet camera: body + lens + mount -->
+        <rect x="-17" y="-9" width="24" height="18" rx="3.5" fill="none" stroke="#22d3ee" stroke-width="1.6"/>
+        <circle cx="12" cy="0" r="7" fill="none" stroke="#22d3ee" stroke-width="1.6"/>
+        <circle cx="12" cy="0" r="2.8" fill="#22d3ee"/>
+        <line x1="-17" y1="0" x2="-23" y2="0" stroke="#22d3ee" stroke-width="1.6"/>
+        <line x1="-23" y1="-8" x2="-23" y2="8" stroke="#22d3ee" stroke-width="1.4"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#22d3ee" font-family="sans-serif" font-weight="700">CAMERAS</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#67e8f9" font-family="monospace">Verkada · RTSP</text>
+      </g>
+
+      <!-- ── CAM SERVER NODE (cx=588, cy=200) ── -->
+      <g transform="translate(588,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#1e3a8a"/>
+        <rect x="-16" y="-17" width="32" height="12" rx="2.5" fill="none" stroke="#60a5fa" stroke-width="1.6"/>
+        <circle cx="11" cy="-11" r="2.5" fill="#22c55e"/>
+        <line x1="-13" y1="-11" x2="-5" y2="-11" stroke="#60a5fa" stroke-width="1.2"/>
+        <rect x="-16" y="-2" width="32" height="12" rx="2.5" fill="none" stroke="#60a5fa" stroke-width="1.6"/>
+        <circle cx="11" cy="4" r="2.5" fill="#60a5fa"/>
+        <line x1="-13" y1="4" x2="-5" y2="4" stroke="#60a5fa" stroke-width="1.2"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#3b82f6" font-family="sans-serif" font-weight="700">CAM SERVER</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="monospace">NVR · processes feeds</text>
+      </g>
+
+      <!-- ── S3 NODE (cx=820, cy=200) ── -->
+      <g transform="translate(820,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#78350f"/>
+        <path d="M-14,-10 L14,-10 L11,13 L-11,13 Z" fill="none" stroke="#f59e0b" stroke-width="1.7"/>
+        <path d="M-8,-10 C-8,-20 8,-20 8,-10" fill="none" stroke="#f59e0b" stroke-width="1.7" stroke-linecap="round"/>
+        <line x1="-12" y1="0" x2="12" y2="1" stroke="#fcd34d" stroke-width="1.2" opacity="0.7"/>
+        <line x1="-11" y1="5" x2="11" y2="6" stroke="#fcd34d" stroke-width="1" opacity="0.5"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#f59e0b" font-family="sans-serif" font-weight="700">S3 BUCKET</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#fcd34d" font-family="monospace">AES-256 · Block Public</text>
+      </g>
+
+      <!-- ── ARROW 1: Internet → Bastion (SSH via IGW) ── -->
+      <line x1="80" y1="200" x2="193" y2="200" stroke="#22c55e" stroke-width="1.5" marker-end="url(#ag)"/>
+      <text x="137" y="189" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace">SSH :22 · via IGW</text>
+
+      <!-- ── ARROW 2: Bastion → Cam Server arc (SSH proxy, over cameras) ── -->
+      <path d="M221,172 Q405,112 588,172" fill="none" stroke="#22c55e" stroke-width="1.4" stroke-dasharray="4,2" marker-end="url(#ag)"/>
+      <text x="405" y="104" text-anchor="middle" font-size="7.5" fill="#22c55e" font-family="monospace">SSH proxy :22 (admin)</text>
+
+      <!-- ── ARROW 3: Cameras → Cam Server (RTSP video stream) ── -->
+      <line x1="446" y1="200" x2="560" y2="200" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ac)"/>
+      <text x="503" y="215" text-anchor="middle" font-size="7.5" fill="#22d3ee" font-family="monospace">RTSP stream</text>
+
+      <!-- ── ARROW 4: Cam Server → S3 (VPC Gateway Endpoint) ── -->
+      <line x1="616" y1="200" x2="792" y2="200" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+      <text x="704" y="189" text-anchor="middle" font-size="7.5" fill="#f59e0b" font-family="monospace">VPC EP :443 (write)</text>
+
+      <!-- ── VIEWER NODE (cx=975, cy=200) — outside VPC, reads from S3 ── -->
+      <g transform="translate(975,200)">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#1c1917"/>
+        <!-- monitor/screen icon -->
+        <rect x="-16" y="-16" width="32" height="22" rx="3" fill="none" stroke="#d1d5db" stroke-width="1.6"/>
+        <line x1="-6" y1="6" x2="6" y2="6" stroke="#d1d5db" stroke-width="1.2"/>
+        <line x1="0" y1="6" x2="0" y2="13" stroke="#d1d5db" stroke-width="1.2"/>
+        <line x1="-7" y1="13" x2="7" y2="13" stroke="#d1d5db" stroke-width="1.2"/>
+        <text y="40" text-anchor="middle" font-size="9" fill="#d1d5db" font-family="sans-serif" font-weight="700">VIEWER</text>
+        <text y="51" text-anchor="middle" font-size="7" fill="#78716c" font-family="monospace">Admin / Client</text>
+      </g>
+
+      <!-- ── ARROW 5: S3 → Viewer (public HTTPS read via Signed URL) ── -->
+      <line x1="848" y1="200" x2="947" y2="200" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5,3" marker-end="url(#al)"/>
+      <text x="897" y="189" text-anchor="middle" font-size="7.5" fill="#6b7280" font-family="monospace">HTTPS :443</text>
+      <text x="897" y="215" text-anchor="middle" font-size="7" fill="#6b7280" font-family="monospace">Signed URL</text>
+    </svg>
+  </div>
+</div>
+
+<!-- 6. NETWORK — black -->
+<div class="slide s-content">
+  <div class="label">02 The Solution</div>
+  <h2>Network segmentation <em>by architecture</em></h2>
+  <div class="split">
+    <ul class="items">
+      <li><span class="idx">01</span>A /16 VPC gives Helix Labs a dedicated address space — fully isolated from every other AWS tenant by default</li>
+      <li><span class="idx">02</span>Public subnet (/24) routes through an Internet Gateway for admin access. Private subnet has no IGW route entry.</li>
+      <li><span class="idx">03</span>The private subnet is unreachable by architecture — no route table entry means no path exists, not just a firewall rule blocking one</li>
+      <li><span class="idx">04</span>All ingress to private hosts is SSH-proxied through the bastion host in the public subnet via agent forwarding</li>
+    </ul>
+    <div>
+      <div class="scenario" style="border-color:#1a1a1a; margin-bottom:0;">
+        <div class="scenario-tag" style="background:#000;">Why this matters</div>
+        <p style="font-size:17px; color:#aaa; line-height:1.7;">Firewall rules can be misconfigured. Route tables cannot route to an address that has no entry. The private subnet is unreachable by design, not policy.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. BASTION — white -->
+<div class="slide s-break white">
+  <div class="label">02 The Solution</div>
+  <h2>Bastion host. <em>One CIDR-locked ingress.</em> No lateral movement possible.</h2>
+</div>
+
+<!-- 7. SECURITY GROUPS — black -->
+<div class="slide s-content">
+  <div class="label">02 The Solution</div>
+  <h2>Zero inbound. <em>Port 443 egress only.</em> Deny-all default posture.</h2>
+  <div class="split">
+    <ul class="items">
+      <li><span class="idx">01</span>Security group has no inbound rules from 0.0.0.0/0 — no public internet access whatsoever</li>
+      <li><span class="idx">02</span>Ingress restricted to SSH (port 22) from the bastion security group ID — scoped to a group, not an IP range</li>
+      <li><span class="idx">03</span>Egress limited to port 443 HTTPS only — mirrors the outbound-only communication model of Verkada cameras</li>
+      <li><span class="idx">04</span>AWS security groups are implicit deny-all by default. Every permission is explicitly defined.</li>
+    </ul>
+    <div>
+      <div class="scenario" style="border-color:#1a1a1a; margin-bottom:0;">
+        <div class="scenario-tag" style="background:#000;">Think of it this way</div>
+        <p style="font-size:17px; color:#aaa; line-height:1.7;">The camera server can make a phone call, but it cannot receive one. Even if someone knew exactly where it was, they could not knock on the door.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. IAM — white -->
+<div class="slide s-content white">
+  <div class="label">02 The Solution</div>
+  <h2>Least-privilege IAM. <em>No static credentials. Ever.</em></h2>
+  <div class="split">
+    <div>
+      <ul class="items">
+        <li><span class="idx">01</span>S3 bucket with Block Public Access — no ACL overrides, no public URLs, ever</li>
+        <li><span class="idx">02</span>EC2 instance profile — temporary credentials via metadata service, no keys on disk</li>
+        <li><span class="idx">03</span>Policy scoped to one bucket ARN. Wildcards explicitly denied.</li>
+      </ul>
+      <div class="action-chips">
+        <span class="chip">s3:PutObject</span>
+        <span class="chip">s3:GetObject</span>
+        <span class="chip">s3:ListBucket</span>
+      </div>
+      <div style="margin-top:12px; font-size:12px; color:#bbb; letter-spacing:1px; text-transform:uppercase;">Three actions. One bucket. Nothing else.</div>
+    </div>
+    <div>
+      <div class="scenario" style="border-color:#e8e8e5; margin-bottom:0;">
+        <div class="scenario-tag" style="background:#fafaf9; color:#ef4444;">Think of it this way</div>
+        <p style="font-size:16px; color:#555; line-height:1.7;">A key that opens one door and lets the server do exactly three things once inside — even if copied, it's useless everywhere else.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. THE INCIDENT — black -->
+<div class="slide s-break center">
+  <div class="label">03 The Moment It Matters</div>
+  <div style="font-size:96px; font-weight:200; letter-spacing:-4px; color:#fff; line-height:1; margin-bottom:24px;">11:47 <span style="color:#ef4444;">PM</span></div>
+  <h2 style="font-weight:300; font-size:28px; color:#aaa; margin-bottom:40px;">An unrecognized person enters the main entrance. No badge. 94% confidence.</h2>
+  <div class="alert-card" style="max-width:560px; text-align:left;">
+    <div class="alert-title">⚠ Unauthorized Access Detected</div>
+    <div class="alert-body">CAM-01 · Main Entrance · No match in database · Alert sent to security team</div>
+  </div>
+</div>
+
+<!-- 10. WHAT THEY SEE — white -->
+<div class="slide s-content white">
+  <div class="label">03 The Moment It Matters</div>
+  <h2>What Helix Labs <em>sees in real time</em></h2>
+  <div class="kpi-grid">
+    <div class="kpi-cell">
+      <div class="kpi-label">Live Occupancy</div>
+      <div class="kpi-val">0</div>
+      <div class="kpi-sub">Unknown individuals<br>in frame right now</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Employee Recognition</div>
+      <div class="kpi-val">0</div>
+      <div class="kpi-sub">Unmatched faces<br>in the last hour</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Dwell Time Alerts</div>
+      <div class="kpi-val">—</div>
+      <div class="kpi-sub">No one flagged<br>for unusual duration</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-label">Security Actions</div>
+      <div class="kpi-val">0</div>
+      <div class="kpi-sub">Open incidents<br>requiring response</div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. DEPLOYMENT — black -->
+<div class="slide s-break">
+  <div class="label">04 Deployment</div>
+  <h2>The entire system. Live in <em>under two minutes.</em> Torn down just as fast.</h2>
+</div>
+
+<!-- 12. CONCLUSION — white -->
+<div class="slide s-content white">
+  <div class="label">05 Conclusion</div>
+  <h2>Requirements met. <em>Principles upheld.</em></h2>
+  <div class="split" style="gap:28px">
+    <div>
+      <div class="n" style="margin-bottom:10px;font-size:10px;letter-spacing:2px">SOLUTION CONSIDERATION</div>
+      <ul class="items" style="margin-bottom:18px">
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">COST</span>$45/mo cloud vs. $50K+ on-prem — 60% lower 3-yr TCO with zero CapEx</li>
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">MAINT</span>Terraform IaC — zero config drift, peer-reviewable, rebuild in one command</li>
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">ISOLN</span>Private subnet has no IGW route — isolated by architecture, not by firewall rules</li>
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">SCALE</span>One Terraform module, parameterized — same deployment for every future client</li>
+      </ul>
+      <div class="n" style="margin-bottom:10px;font-size:10px;letter-spacing:2px">TENETS</div>
+      <ul class="items">
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">01</span>Zero trust — no implicit access, every path is explicitly permitted and logged</li>
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">02</span>Least privilege — three S3 actions, one bucket ARN, no static credentials</li>
+        <li style="font-size:13px"><span class="idx" style="font-size:9px">03</span>Defense in depth — six independent layers, each one limits blast radius</li>
+      </ul>
+    </div>
+    <div>
+      <div class="n" style="margin-bottom:10px;font-size:10px;letter-spacing:2px">ALL REQUIREMENTS MET</div>
+      <ul style="list-style:none;margin:0 0 18px 0">
+        <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>FR</strong> — Camera systems isolated from corporate LAN by architecture</span></li>
+        <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>FR</strong> — Single auditable ingress; every admin session is logged</span></li>
+        <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>FR</strong> — Encrypted footage in private S3; unreachable without IAM auth</span></li>
+        <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>NFR</strong> — Cost-justified: 60% lower TCO vs. on-prem over 3 years</span></li>
+        <li style="font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid #e8e8e5;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>NFR</strong> — Multi-client: same Terraform module deploys for any client in &lt;2 min</span></li>
+        <li style="font-size:13px;color:#333;padding:6px 0;display:flex;gap:10px"><span style="color:#16a34a;font-weight:700">✓</span><span><strong>NFR</strong> — Compliance-ready: CloudTrail + VPC Flow Logs cover SOC 2 &amp; ISO 27001</span></li>
+      </ul>
+      <div class="stats" style="justify-content:flex-start;gap:16px;padding-top:4px">
+        <div class="stat"><div class="num" style="color:#111;font-size:26px">19</div><div class="lbl">Cloud resources</div></div>
+        <div class="stat"><div class="num" style="color:#111;font-size:26px">0</div><div class="lbl">Exposed entry points</div></div>
+        <div class="stat"><div class="num" style="color:#111;font-size:26px">&lt;2m</div><div class="lbl">Deploy time</div></div>
+        <div class="stat"><div class="num" style="color:#16a34a;font-size:26px">6/6</div><div class="lbl">Requirements met</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 16. CLOSING VISUAL — black -->
+<div class="slide s-break center">
+  <div class="label" style="margin-bottom:48px;">Helix Labs · Zero-Trust Infrastructure</div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#222; border:1px solid #222; max-width:720px; width:100%; margin:0 auto 48px;">
+    <div style="background:#111; padding:48px 32px; text-align:center;">
+      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#fff; line-height:1;">19</div>
+      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Cloud Resources</div>
+    </div>
+    <div style="background:#111; padding:48px 32px; text-align:center;">
+      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#ef4444; line-height:1;">0</div>
+      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Exposed Entry Points</div>
+    </div>
+    <div style="background:#111; padding:48px 32px; text-align:center;">
+      <div style="font-size:64px; font-weight:200; letter-spacing:-3px; color:#16a34a; line-height:1;">6/6</div>
+      <div style="font-size:10px; letter-spacing:2px; color:#555; text-transform:uppercase; margin-top:14px;">Requirements Met</div>
+    </div>
+  </div>
+  <p style="font-size:14px; color:#444; letter-spacing:1px; text-transform:uppercase;">Zero trust. Least privilege. Infrastructure as code.</p>
+</div>
+
+<div class="pg-fixed" id="pgFixed">01</div>
+<div class="vk-mark">
+  <img src="verkada-logo.png" alt="Verkada"/>
+</div>
+<nav>
+  <button onclick="prev()">←</button>
+  <span class="pg" id="pg">1 / 14</span>
+  <button onclick="next()">→</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    document.getElementById('pg').textContent = (cur+1) + ' / ' + slides.length;
+    document.getElementById('pgFixed').textContent = String(cur+1).padStart(2,'0');
+  }
+
+  function next() { show(cur+1); }
+  function prev() { show(cur-1); }
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); next(); }
+    if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); prev(); }
+  });
+</script>
+</body>
+</html>
